@@ -1,0 +1,5 @@
+spring:
+  application:
+    name:
+      coop
+    #h2 db
