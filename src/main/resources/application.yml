@@ -4,4 +4,4 @@ spring:
 
 #spring:
 #  profiles:
-#    active: base
+#    active: dev
