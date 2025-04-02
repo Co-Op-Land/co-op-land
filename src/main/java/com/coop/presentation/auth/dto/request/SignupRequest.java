@@ -11,7 +11,7 @@ public record SignupRequest(
         @NotBlank String nickname
 ) {
 
-    public static Member toEntity(String email, String password, String nickname) {
+    public static Member toEntity(String email, String nickname, String password) {
         return Member.builder()
                 .email(email)
                 .nickname(nickname)
