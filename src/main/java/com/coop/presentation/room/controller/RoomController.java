@@ -1,5 +1,6 @@
 package com.coop.presentation.room.controller;
 
+import com.coop.domain.room.enums.Status;
 import com.coop.domain.room.service.RoomService;
 import com.coop.global.common.ApiResponse;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
@@ -31,7 +32,7 @@ public class RoomController {
     @PatchMapping("/{roomId}")
     public ResponseEntity<ApiResponse<Long>> updateRoom(
             @AuthenticationPrincipal User userDetails,
-            @RequestParam Long roomId,
+            @PathVariable Long roomId,
             @RequestBody @Valid RoomUpdateRequest request
     ) {
         roomService.modifyRoom(Long.valueOf(userDetails.getUsername()), roomId, request);
