@@ -1,4 +1,4 @@
-package com.coop.coop;
+package com.coop;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

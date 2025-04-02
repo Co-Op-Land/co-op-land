@@ -1,4 +1,4 @@
-package com.coop.coop;
+package com.coop.land;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
