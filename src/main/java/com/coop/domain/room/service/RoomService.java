@@ -7,8 +7,10 @@ import com.coop.domain.member.repository.MemberRepository;
 import com.coop.domain.room.entity.Room;
 import com.coop.domain.room.repository.RoomRepository;
 import com.coop.global.common.enums.ErrorCode;
+import com.coop.global.exception.error.ForbiddenException;
 import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
+import com.coop.presentation.room.dto.request.RoomUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +25,41 @@ public class RoomService {
 
     @Transactional
     public Long generateRoom(Long userId, RoomCreateRequest request) {
-        Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
-        Game game = gameRepository.findById(request.gameId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
+        Member member = findMemberById(userId);
+        Game game = findGameById(request.gameId());
 
         Room room = roomRepository.save(request.toEntity(member, game));
 
         return room.getId();
+    }
+
+    public void modifyRoom(Long userId, Long roomId, RoomUpdateRequest request) {
+        Room room = findRoomById(roomId);
+
+        checkUserAuthority(room.getMember().getId(), userId);
+
+        room.update(request.title(), request.difficulty(), request.maxPlayerCount());
+    }
+
+    public Room findRoomById(Long roomId) {
+        return roomRepository.findById(roomId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND));
+    }
+
+    // 헬퍼
+    private Member findMemberById(Long userId) {
+        return memberRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+    }
+
+    private Game findGameById(Long gameId) {
+        return gameRepository.findById(gameId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
+    }
+
+    private void checkUserAuthority(Long userId, Long loginUserId) {
+        if (!userId.equals(loginUserId)) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        }
     }
 }

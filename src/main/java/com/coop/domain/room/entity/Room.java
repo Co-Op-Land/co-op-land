@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -62,5 +63,19 @@ public class Room extends BaseEntity {
         this.difficulty = difficulty;
         this.status = status;
         this.maxPlayerCount = maxPlayerCount;
+    }
+
+    public void update(String title, Difficulty difficulty, Integer maxPlayerCount) {
+        if (title != null && !title.isBlank()) {
+            this.title = title;
+        }
+
+        if (difficulty != null) {
+            this.difficulty = difficulty;
+        }
+
+        if (maxPlayerCount != null) {
+            this.maxPlayerCount = maxPlayerCount;
+        }
     }
 }
