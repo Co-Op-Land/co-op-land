@@ -101,7 +101,7 @@ public class AuthService {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow();
-        String refreshAccessToken = jwtUtil.createToken(memberId, member.getRole());
-        return RefreshAccessTokenResponse.from(refreshAccessToken, newRefreshToken);
+        String newAccessToken = jwtUtil.createToken(memberId, member.getRole());
+        return RefreshAccessTokenResponse.from(newAccessToken, newRefreshToken);
     }
 }
