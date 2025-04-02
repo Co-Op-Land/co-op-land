@@ -19,6 +19,11 @@ public enum ErrorCode {
     TOO_MANY_REQUEST(HttpStatus.TOO_MANY_REQUESTS, "429", "현재 요청이 많아 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
 
     // Member
+    ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "400", "이미 존재하는 이메일입니다."),
+    TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "401", "존재하지 않는 토큰입니다."),
+    INVALID_EMAIL(HttpStatus.UNAUTHORIZED, "401", "이메일이 잘못되었습니다."),
+    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED,"401", "패스워드가 잘못되었습니다."),
+
 
     // Post
 
