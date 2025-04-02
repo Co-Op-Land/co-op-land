@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(jwtSecurityProperties.secret().whiteList().toArray(new String[0])).permitAll()
                         .requestMatchers(jwtSecurityProperties.secret().adminList().toArray(new String[0])).hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
 
                 .addFilterAt(jwtFilter, UsernamePasswordAuthenticationFilter.class)
