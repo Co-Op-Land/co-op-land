@@ -4,6 +4,7 @@ import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.repository.MemberRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.InvalidRequestException;
+import com.coop.global.exception.error.NotFoundException;
 import com.coop.global.exception.error.UnAuthorizedException;
 import com.coop.global.security.JwtSecurityProperties;
 import com.coop.global.security.JwtUtil;
@@ -49,7 +50,7 @@ public class AuthService {
      */
     public LoginResponse login(LoginRequest dto) {
         Member member = memberRepository.findByEmail(dto.email())
-                .orElseThrow();
+                .orElseThrow(() -> new InvalidRequestException(ErrorCode.INVALID_EMAIL));
         if (!passwordEncoder.matches(dto.password(), member.getPassword())) {
             throw new InvalidRequestException(ErrorCode.INVALID_PASSWORD);
         }
@@ -100,7 +101,7 @@ public class AuthService {
         refreshTokenService.createRefreshToken(memberId, newRefreshToken);
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow();
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
         String newAccessToken = jwtUtil.createToken(memberId, member.getRole());
         return RefreshAccessTokenResponse.from(newAccessToken, newRefreshToken);
     }
