@@ -5,6 +5,7 @@ import com.coop.domain.post.enums.PostCategory;
 import com.coop.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,41 @@ public class Post extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private PostCategory category;
+
+    @Builder
+    private Post(
+            Member member,
+            String title,
+            String content,
+            PostCategory category
+    ) {
+        this.member = member;
+        this.title = title;
+        this.content = content;
+        this.category = category;
+    }
+
+    public void modify(String title, String content, PostCategory category) {
+        modifyTitle(title);
+        modifyContent(content);
+        modifyCategory(category);
+    }
+
+    private void modifyTitle(String newTitle) {
+        if (newTitle != null && !newTitle.isBlank()) {
+            this.title = newTitle;
+        }
+    }
+
+    private void modifyContent(String newContent) {
+        if (newContent != null && !newContent.isBlank()) {
+            this.content = newContent;
+        }
+    }
+
+    private void modifyCategory(PostCategory newCategory) {
+        if (newCategory != null) {
+            this.category = newCategory;
+        }
+    }
 }
