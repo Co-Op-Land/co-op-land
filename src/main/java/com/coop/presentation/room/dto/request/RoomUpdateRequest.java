@@ -1,10 +1,12 @@
 package com.coop.presentation.room.dto.request;
 
 import com.coop.domain.room.enums.Difficulty;
+import com.coop.domain.room.enums.Visibility;
 
 public record RoomUpdateRequest(
         String title,
-        int maxPlayerCount,
-        Difficulty difficulty
+        Integer maxPlayerCount,
+        Difficulty difficulty,
+        Visibility visibility
 ) {
 }
