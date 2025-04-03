@@ -6,6 +6,7 @@ import com.coop.domain.rating.entity.Rating;
 import com.coop.domain.rating.repository.RatingRepository;
 import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.rating.dto.request.RatingRequest;
+import com.coop.presentation.rating.dto.response.RatingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +25,10 @@ public class RatingService {
         return ratingRepository.save(rating);
     }
 
-    public List<Rating> findReviews(Long memberId) {
+    public List<RatingResponse> findReviews(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
-        return ratingRepository.findByToMember(member);
+        List<Rating> ratings = ratingRepository.findByToMember(member);
+        return ratings.stream().map(RatingResponse::from).toList();
     }
 
     public double findRatingAverage(Long memberId) {

@@ -4,6 +4,7 @@ import com.coop.domain.rating.entity.Rating;
 import com.coop.domain.rating.service.RatingService;
 import com.coop.global.common.ApiResponse;
 import com.coop.presentation.rating.dto.request.RatingRequest;
+import com.coop.presentation.rating.dto.response.RatingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,7 +46,7 @@ public class RatingController {
     }
 
     @GetMapping("/review/{id}")
-    public ResponseEntity<ApiResponse<List<Rating>>> readMemberReviews(
+    public ResponseEntity<ApiResponse<List<RatingResponse>>> readMemberReviews(
             @PathVariable Long id
     ) {
         return ApiResponse.success(ratingService.findReviews(id));
