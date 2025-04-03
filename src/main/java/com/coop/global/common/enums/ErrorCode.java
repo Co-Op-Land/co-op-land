@@ -3,6 +3,7 @@ package com.coop.global.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor
@@ -24,11 +25,14 @@ public enum ErrorCode {
     INVALID_EMAIL(HttpStatus.UNAUTHORIZED, "401", "이메일이 잘못되었습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED,"401", "패스워드가 잘못되었습니다."),
 
-
     // Post
+    NOT_FOUND_POST(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시물입니다."),
+    INVALID_POST_CATEGORY(HttpStatus.BAD_REQUEST, "400", "게시물 카테고리가 잘못되었습니다."),
 
+    // Comment
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404", "존재하지 않는 댓글입니다."),
+    INVALID_PARENT_ID(HttpStatus.BAD_REQUEST, "404", "답글을 달려는 댓글을 찾을 수 없습니다."),
     // Game
-
 
     ;
     private final HttpStatus status;
