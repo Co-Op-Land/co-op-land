@@ -4,6 +4,7 @@ import com.coop.domain.game.entity.Game;
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.room.enums.Difficulty;
 import com.coop.domain.room.enums.Status;
+import com.coop.domain.room.enums.Visibility;
 import com.coop.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -28,7 +28,7 @@ public class Room extends BaseEntity {
     private String title;
 
     @Column(nullable = false)
-    private int maxPlayerCount;
+    private Integer maxPlayerCount;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -38,9 +38,13 @@ public class Room extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Visibility visibility;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "host_id")
+    private Member host;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id")
@@ -55,27 +59,39 @@ public class Room extends BaseEntity {
             String title,
             Difficulty difficulty,
             Status status,
-            int maxPlayerCount
+            Visibility visibility,
+            Integer maxPlayerCount
     ) {
         this.game = game;
-        this.member = member;
+        this.host = member;
         this.title = title;
         this.difficulty = difficulty;
         this.status = status;
+        this.visibility = visibility;
         this.maxPlayerCount = maxPlayerCount;
     }
 
-    public void update(String title, Difficulty difficulty, Integer maxPlayerCount) {
+    public void update(String title, Integer maxPlayerCount, Difficulty difficulty, Visibility visibility) {
         if (title != null && !title.isBlank()) {
             this.title = title;
+        }
+
+        if (maxPlayerCount != null) {
+            this.maxPlayerCount = maxPlayerCount;
         }
 
         if (difficulty != null) {
             this.difficulty = difficulty;
         }
 
-        if (maxPlayerCount != null) {
-            this.maxPlayerCount = maxPlayerCount;
+        if (visibility != null) {
+            this.visibility = visibility;
+        }
+    }
+
+    public void updateStatus(Status status) {
+        if (status != null) {
+            this.status = status;
         }
     }
 }

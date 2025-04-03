@@ -11,6 +11,7 @@ import com.coop.global.exception.error.ForbiddenException;
 import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateRequest;
+import com.coop.presentation.room.dto.request.RoomUpdateStatusRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +37,17 @@ public class RoomService {
     public void modifyRoom(Long userId, Long roomId, RoomUpdateRequest request) {
         Room room = findRoomById(roomId);
 
-        checkUserAuthority(room.getMember().getId(), userId);
+        checkUserAuthority(room.getHost().getId(), userId);
 
-        room.update(request.title(), request.difficulty(), request.maxPlayerCount());
+        room.update(request.title(), request.maxPlayerCount(), request.difficulty(), request.visibility());
+    }
+
+    public void modifyRoomStatus(Long userId, Long roomId, RoomUpdateStatusRequest request) {
+        Room room = findRoomById(roomId);
+
+        checkUserAuthority(room.getHost().getId(), userId);
+
+        room.updateStatus(request.status());
     }
 
     public Room findRoomById(Long roomId) {

@@ -1,10 +1,10 @@
 package com.coop.presentation.room.controller;
 
-import com.coop.domain.room.enums.Status;
 import com.coop.domain.room.service.RoomService;
 import com.coop.global.common.ApiResponse;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateRequest;
+import com.coop.presentation.room.dto.request.RoomUpdateStatusRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +36,17 @@ public class RoomController {
             @RequestBody @Valid RoomUpdateRequest request
     ) {
         roomService.modifyRoom(Long.valueOf(userDetails.getUsername()), roomId, request);
+
+        return ApiResponse.created(roomId);
+    }
+
+    @PatchMapping("/{roomId}/status")
+    public ResponseEntity<ApiResponse<Long>> updateRoomStatus(
+            @AuthenticationPrincipal User userDetails,
+            @PathVariable Long roomId,
+            @RequestBody @Valid RoomUpdateStatusRequest request
+    ) {
+        roomService.modifyRoomStatus(Long.valueOf(userDetails.getUsername()), roomId, request);
 
         return ApiResponse.created(roomId);
     }
