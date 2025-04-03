@@ -4,6 +4,7 @@ import com.coop.domain.room.entity.Room;
 import com.coop.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,4 +21,11 @@ public class History extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
+
+    private Boolean isCompleted;
+
+    @Builder
+    public History(Room room) {
+        this.room = room;
+    }
 }
