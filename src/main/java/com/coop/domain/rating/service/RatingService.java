@@ -22,6 +22,7 @@ public class RatingService {
     public Rating generateReview(RatingRequest request, Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
         Rating rating = request.toEntity(member);
+        //member에 rating 값 갱신
         return ratingRepository.save(rating);
     }
 

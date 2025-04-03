@@ -25,7 +25,12 @@ public class History extends BaseEntity {
     private Boolean isCompleted;
 
     @Builder
-    public History(Room room) {
+    public History(Room room, Boolean isCompleted) {
         this.room = room;
+        this.isCompleted = isCompleted;
+    }
+
+    public void ProcessHistoryComplete() {
+        this.isCompleted = true;
     }
 }

@@ -6,9 +6,11 @@ import com.coop.domain.playHistory.repository.HistoryRepository;
 import com.coop.domain.player.entity.Player;
 import com.coop.domain.player.service.PlayerService;
 import com.coop.domain.room.entity.Room;
+import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.playHistory.dto.response.HistoryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -23,9 +25,16 @@ public class HistoryService {
     public History generateHistory(Room room, List<Member> members) {
         History history = History.builder()
                 .room(room)
+                .isCompleted(false)
                 .build();
         generatePlayer(history,members);
         return historyRepository.save(history);
+    }
+
+    @Transactional
+    public void modifyHistoryToCompleted(Long historyId) {
+        History history = historyRepository.findById(historyId).orElseThrow(NotFoundException::new);
+        history.ProcessHistoryComplete();
     }
 
     private void generatePlayer(History history, List<Member> members) {
