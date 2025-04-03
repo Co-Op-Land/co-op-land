@@ -1,4 +1,5 @@
 package com.coop.presentation.playHistory.dto.response;
 
-public class PlayHistoryResponse {
+public record PlayHistoryResponse(Long id, Long roomId) {
+
 }
