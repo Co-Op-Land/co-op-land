@@ -19,7 +19,8 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Long>> createPost(@AuthenticationPrincipal UserDetails userDetails) {
-        Long id = postService.generatePost();
-        return ApiResponse.created(id);
+//        Long id = postService.generatePost();
+//        return ApiResponse.created(id);
+        return null;
     }
 }
