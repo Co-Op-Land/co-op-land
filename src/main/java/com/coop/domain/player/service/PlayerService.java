@@ -4,11 +4,13 @@ import com.coop.domain.member.entity.Member;
 import com.coop.domain.playHistory.entity.History;
 import com.coop.domain.player.entity.Player;
 import com.coop.domain.player.repository.PlayerRepository;
+import com.coop.domain.player.repository.PlayerRepositoryCustomImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +20,7 @@ public class PlayerService {
 
     @Transactional
     public void generatePlayer(History history, List<Member> members) {
-        for(Member member : members){
+        for (Member member : members) {
             Player player = Player.builder()
                     .history(history)
                     .member(member)
@@ -27,7 +29,7 @@ public class PlayerService {
         }
     }
 
-    public List<Player> findPlayersByHistory(History history) {
-        return playerRepository.findByHistory(history);
+    public Map<History, List<Player>> findPlayersFromHistoriesByMember(Member member) {
+        return playerRepository.findHistoriesWithPlayersByMemberId(member.getId());
     }
 }
