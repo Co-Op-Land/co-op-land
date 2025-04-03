@@ -1,6 +1,8 @@
 package com.coop.domain.auth.service;
 
 import com.coop.global.security.JwtSecurityProperties;
+import com.coop.global.security.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,7 @@ public class BlackListService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final JwtSecurityProperties jwtSecurityProperties;
+    private final JwtUtil jwtUtil;
 
     /**
      * 사용자의 AccessToken 을 블랙리스트에 저장하는 메서드
@@ -20,10 +23,16 @@ public class BlackListService {
      */
     public void addToBlackList(String token) {
         String blackPrefix = jwtSecurityProperties.token().blackListPrefix();
-        long blackExpiration = jwtSecurityProperties.token().blackListExpiration();
         String key = blackPrefix + token;
-        redisTemplate.opsForValue().set(key, "blackList", blackExpiration, TimeUnit.MILLISECONDS);
+
+        Claims claims = jwtUtil.extractClaims(token);
+        long expirationMillis = claims.getExpiration().getTime() - System.currentTimeMillis();
+
+        if (expirationMillis > 0) {
+            redisTemplate.opsForValue().set(key, "blackList", expirationMillis + 1000, TimeUnit.MILLISECONDS);
+        }
     }
+
 
     /**
      * 블랙리스트에 등록된 토큰인지 검증하는 메서드
