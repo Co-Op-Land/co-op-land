@@ -30,24 +30,44 @@ public class RoomController {
     }
 
     @PatchMapping("/{roomId}")
-    public ResponseEntity<ApiResponse<Long>> updateRoom(
+    public ResponseEntity<ApiResponse<Void>> updateRoom(
             @AuthenticationPrincipal User userDetails,
             @PathVariable Long roomId,
             @RequestBody @Valid RoomUpdateRequest request
     ) {
         roomService.modifyRoom(Long.valueOf(userDetails.getUsername()), roomId, request);
 
-        return ApiResponse.created(roomId);
+        return ApiResponse.noContent();
     }
 
     @PatchMapping("/{roomId}/status")
-    public ResponseEntity<ApiResponse<Long>> updateRoomStatus(
+    public ResponseEntity<ApiResponse<Void>> updateRoomStatus(
             @AuthenticationPrincipal User userDetails,
             @PathVariable Long roomId,
             @RequestBody @Valid RoomUpdateStatusRequest request
     ) {
         roomService.modifyRoomStatus(Long.valueOf(userDetails.getUsername()), roomId, request);
 
+        return ApiResponse.noContent();
+    }
+
+    @PostMapping("/{roomId}")
+    public ResponseEntity<ApiResponse<Long>> joinRoom(
+            @AuthenticationPrincipal User userDetails,
+            @PathVariable Long roomId
+    ) {
+        roomService.joinRoom(Long.valueOf(userDetails.getUsername()), roomId);
+
         return ApiResponse.created(roomId);
+    }
+
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<ApiResponse<Void>> leaveRoom(
+            @AuthenticationPrincipal User userDetails,
+            @PathVariable Long roomId
+    ) {
+        roomService.leaveRoom(Long.valueOf(userDetails.getUsername()), roomId);
+
+        return ApiResponse.noContent();
     }
 }

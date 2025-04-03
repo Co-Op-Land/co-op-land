@@ -23,8 +23,7 @@ public enum ErrorCode {
     ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "400", "이미 존재하는 이메일입니다."),
     TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "401", "존재하지 않는 토큰입니다."),
     INVALID_EMAIL(HttpStatus.UNAUTHORIZED, "401", "이메일이 잘못되었습니다."),
-    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED,"401", "패스워드가 잘못되었습니다."),
-
+    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "401", "패스워드가 잘못되었습니다."),
 
     // Post
 
@@ -32,7 +31,11 @@ public enum ErrorCode {
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "G404", "존재하지 않는 게임입니다."),
 
     // Room
-    ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "R404", "존재하지 않는 방입니다.")
+    ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "R404", "존재하지 않는 방입니다."),
+    MEMBER_NOT_IN_ROOM(HttpStatus.NOT_FOUND, "R400", "유저가 해당 방에 없습니다."),
+    MEMBER_ALREADY_IN_ROOM(HttpStatus.CONFLICT, "R409", "이미 방에 접속중입니다."),
+    ROOM_IS_FULL(HttpStatus.BAD_REQUEST, "R400", "방이 가득 찼습니다.")
+
 
     ;
     private final HttpStatus status;

@@ -94,4 +94,8 @@ public class Room extends BaseEntity {
             this.status = status;
         }
     }
+
+    public void close() {
+        this.status = Status.CLOSED;
+    }
 }

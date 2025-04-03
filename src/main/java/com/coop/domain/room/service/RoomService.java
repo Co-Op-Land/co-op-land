@@ -9,6 +9,7 @@ import com.coop.domain.room.repository.RoomRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.ForbiddenException;
 import com.coop.global.exception.error.NotFoundException;
+import com.coop.global.repository.RoomPlayerRepository;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateStatusRequest;
@@ -21,43 +22,67 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoomService {
 
     private final RoomRepository roomRepository;
+    private final RoomPlayerRepository roomPlayerRepository;
     private final MemberRepository memberRepository;
     private final GameRepository gameRepository;
 
     @Transactional
-    public Long generateRoom(Long userId, RoomCreateRequest request) {
-        Member member = findMemberById(userId);
+    public Long generateRoom(Long memberId, RoomCreateRequest request) {
+        Member member = findMemberById(memberId);
         Game game = findGameById(request.gameId());
 
         Room room = roomRepository.save(request.toEntity(member, game));
 
+        roomPlayerRepository.addPlayer(room.getId(), memberId, room.getMaxPlayerCount());
+
         return room.getId();
     }
 
-    public void modifyRoom(Long userId, Long roomId, RoomUpdateRequest request) {
+    @Transactional
+    public void modifyRoom(Long memberId, Long roomId, RoomUpdateRequest request) {
         Room room = findRoomById(roomId);
 
-        checkUserAuthority(room.getHost().getId(), userId);
+        checkUserAuthority(room.getHost().getId(), memberId);
 
         room.update(request.title(), request.maxPlayerCount(), request.difficulty(), request.visibility());
     }
 
-    public void modifyRoomStatus(Long userId, Long roomId, RoomUpdateStatusRequest request) {
+    @Transactional
+    public void modifyRoomStatus(Long memberId, Long roomId, RoomUpdateStatusRequest request) {
         Room room = findRoomById(roomId);
 
-        checkUserAuthority(room.getHost().getId(), userId);
+        checkUserAuthority(room.getHost().getId(), memberId);
 
         room.updateStatus(request.status());
     }
 
+    @Transactional
+    public void joinRoom(Long memberId, Long roomId) {
+        Room room = findRoomById(roomId);
+
+        roomPlayerRepository.addPlayer(room.getId(), memberId, room.getMaxPlayerCount());
+    }
+
+    @Transactional
+    public void leaveRoom(Long memberId, Long roomId) {
+        Room room = findRoomById(roomId);
+
+        roomPlayerRepository.removePlayer(room.getId(), memberId);
+
+        if (!roomPlayerRepository.isRoomExists(roomId)) {
+            room.close();
+        }
+    }
+
+    @Transactional(readOnly = true)
     public Room findRoomById(Long roomId) {
         return roomRepository.findById(roomId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.ROOM_NOT_FOUND));
     }
 
     // 헬퍼
-    private Member findMemberById(Long userId) {
-        return memberRepository.findById(userId)
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
