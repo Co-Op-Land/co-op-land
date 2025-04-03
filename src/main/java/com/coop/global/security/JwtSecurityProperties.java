@@ -20,7 +20,6 @@ public record JwtSecurityProperties(
             String refreshPrefix,
             String blackListPrefix,
             long expiration,
-            long refreshExpiration,
-            long blackListExpiration
+            long refreshExpiration
     ) {}
 }
