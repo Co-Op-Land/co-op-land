@@ -29,7 +29,7 @@ public class PlayerService {
         }
     }
 
-    public Map<History, List<Player>> findPlayersFromHistoriesByMember(Member member) {
-        return playerRepository.findHistoriesWithPlayersByMemberId(member.getId());
+    public Map<History, List<Player>> findPlayersFromHistoriesByMember(Long memberId) {
+        return playerRepository.findHistoriesWithPlayersByMemberId(memberId);
     }
 }
