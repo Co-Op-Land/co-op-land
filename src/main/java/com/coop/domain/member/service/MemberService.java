@@ -25,7 +25,7 @@ public class MemberService {
     public MemberResponse readUser(Long id) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
-        return MemberResponse.from(member.getEmail(), member.getNickname());
+        return MemberResponse.from(id, member.getEmail(), member.getNickname());
     }
 
     /**
