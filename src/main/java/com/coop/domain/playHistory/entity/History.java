@@ -22,6 +22,8 @@ public class History extends BaseEntity {
     @JoinColumn(name = "room_id")
     private Room room;
 
+    private Boolean isCompleted;
+
     @Builder
     public History(Room room) {
         this.room = room;
