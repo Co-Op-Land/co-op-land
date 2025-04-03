@@ -4,6 +4,7 @@ import com.coop.domain.playHistory.entity.History;
 import com.coop.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,10 @@ public class Player {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @Builder
+    public Player(History history, Member member) {
+        this.history = history;
+        this.member = member;
+    }
 }
