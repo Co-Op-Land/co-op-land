@@ -19,12 +19,18 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
+    /**
+     * member 정보 조회
+     */
     public MemberResponse readUser(Long id) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
         return MemberResponse.from(member.getEmail(), member.getNickname());
     }
 
+    /**
+     * 비밀번호 변경
+     */
     @Transactional
     public void updatePassword(Long id, UpdatePasswordRequest requestDto) {
         Member member = memberRepository.findById(id)
