@@ -5,12 +5,11 @@ import lombok.Builder;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record LoginResponse(
-        String accessToken,
-        String refreshToken
+public record RefreshAccessTokenResponse(
+        String accessToken, String refreshToken
 ) {
-    public static LoginResponse from(String accessToken, String refreshToken) {
-        return LoginResponse.builder()
+    public static RefreshAccessTokenResponse from(String accessToken, String refreshToken) {
+        return RefreshAccessTokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

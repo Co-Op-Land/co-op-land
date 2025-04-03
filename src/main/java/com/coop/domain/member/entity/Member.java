@@ -1,13 +1,8 @@
 package com.coop.domain.member.entity;
 
 import com.coop.global.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Getter
@@ -16,7 +11,11 @@ import lombok.NoArgsConstructor;
 public class Member extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
     @Column(nullable = false)
     private String email;
@@ -26,4 +25,16 @@ public class Member extends BaseEntity {
 
     @Column(nullable = false)
     private String nickname;
+
+    @Builder
+    public Member(Role role, String email, String password, String nickname) {
+        this.role = role != null ? role : Role.USER;
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
