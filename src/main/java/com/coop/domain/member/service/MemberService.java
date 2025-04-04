@@ -22,7 +22,7 @@ public class MemberService {
      */
     public MemberResponse readUser(Long id) {
         Member member = memberComponent.findById(id);
-        return MemberResponse.from(id, member.getEmail(), member.getNickname());
+        return MemberResponse.from(id, member.getEmail(), member.getNickname(), member.getRating());
     }
 
     /**
