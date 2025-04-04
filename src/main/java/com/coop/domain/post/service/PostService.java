@@ -1,16 +1,16 @@
 package com.coop.domain.post.service;
 
 import com.coop.domain.comment.entity.Comment;
-import com.coop.domain.comment.repository.CommentRepository;
+import com.coop.domain.comment.service.CommentService;
 import com.coop.domain.member.entity.Member;
-import com.coop.domain.member.repository.MemberRepository;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.post.entity.Post;
 import com.coop.domain.post.enums.PostCategory;
 import com.coop.domain.post.repository.PostRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.AccessDeniedException;
 import com.coop.global.exception.error.NotFoundException;
-import com.coop.presentation.comment.dto.response.CommentsResponse;
+import com.coop.presentation.comment.dto.response.PostCommentsResponse;
 import com.coop.presentation.post.dto.request.PostRequest;
 import com.coop.presentation.post.dto.response.PostPageResponse;
 import com.coop.presentation.post.dto.response.PostResponse;
@@ -28,12 +28,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
-    private final CommentRepository commentRepository;
+    private final MemberComponent memberComponent;
+    private final CommentService commentService;
 
     @Transactional
     public Long generatePost(UserDetails userDetails, PostRequest request) {
-        Member member = memberRepository.getReferenceById(Long.valueOf(userDetails.getUsername()));
+        Member member = memberComponent.findMemberReference(Long.valueOf(userDetails.getUsername()));
         postRepository.save(request.of(member));
 
         return member.getId();
@@ -49,8 +49,8 @@ public class PostService {
     public PostResponse getPost(Long postId, Pageable pageable) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
-        Page<Comment> comments = commentRepository.findAllByPost_Id(postId, pageable);
-        Page<CommentsResponse> commentPage = comments.map(CommentsResponse::of);
+        Page<Comment> comments = commentService.findAllByPost_IdAndParentIsNull(postId, pageable);
+        Page<PostCommentsResponse> commentPage = comments.map(PostCommentsResponse::of);
 
         return PostResponse.from(post, commentPage);
     }
@@ -72,7 +72,8 @@ public class PostService {
     }
 
     private Post getPostById(Long postId) {
-        return postRepository.findById(postId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
     }
 
     private void validateAccess(Post post, UserDetails userDetails) {

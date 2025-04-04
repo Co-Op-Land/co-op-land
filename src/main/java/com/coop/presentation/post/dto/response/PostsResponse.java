@@ -20,6 +20,7 @@ public record PostsResponse(
                 .id(post.getId())
                 .category(post.getCategory())
                 .nickname(post.getMember().getNickname())
+                .title(post.getTitle())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();
