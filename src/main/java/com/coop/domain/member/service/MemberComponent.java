@@ -27,7 +27,7 @@ public class MemberComponent {
 
     public void isExist(Long id) {
         if (memberRepository.existsById(id)) {
-            throw new InvalidRequestException(ErrorCode.ALREADY_EXIST_EMAIL);
+            throw new InvalidRequestException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
 
