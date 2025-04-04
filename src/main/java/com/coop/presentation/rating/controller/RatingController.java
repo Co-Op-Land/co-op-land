@@ -30,21 +30,6 @@ public class RatingController {
         return ApiResponse.created(rating);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Double>> readMemberRatingAverage(
-            @PathVariable Long id
-    ) {
-        return ApiResponse.success(ratingService.findRatingAverage(id));
-    }
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<Double>> readMyRating(
-            @AuthenticationPrincipal User userDetails
-    ) {
-        Long userId = Long.valueOf(userDetails.getUsername());
-        return ApiResponse.success(ratingService.findRatingAverage(userId));
-    }
-
     @GetMapping("/review/{id}")
     public ResponseEntity<ApiResponse<List<RatingResponse>>> readMemberReviews(
             @PathVariable Long id
