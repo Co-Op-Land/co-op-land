@@ -32,9 +32,14 @@ public class HistoryService {
     }
 
     @Transactional
-    public void modifyHistoryToCompleted(Long roomId) {//room id로
+    public void modifyHistoryToCompleted(Long roomId) {
         History history = historyRepository.findByRoomId(roomId).orElseThrow(NotFoundException::new);
         history.ProcessHistoryComplete();
+    }
+
+    @Transactional
+    public void removeHistory(Long roomId) {
+        historyRepository.removeByRoomId(roomId);
     }
 
     private void generatePlayer(History history, List<Member> members) {
