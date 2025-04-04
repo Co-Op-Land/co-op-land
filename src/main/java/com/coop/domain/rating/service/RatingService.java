@@ -1,7 +1,7 @@
 package com.coop.domain.rating.service;
 
 import com.coop.domain.member.entity.Member;
-import com.coop.domain.member.repository.MemberRepository;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.rating.entity.Rating;
 import com.coop.domain.rating.repository.RatingRepository;
 import com.coop.global.exception.error.NotFoundException;
@@ -17,7 +17,7 @@ import java.util.List;
 public class RatingService {
 
     private final RatingRepository ratingRepository;
-    private final MemberRepository memberRepository;
+    private final MemberComponent memberComponent;
 
     public Rating generateReview(RatingRequest request, Long memberId) {
         Member member = getMember(memberId);
@@ -47,6 +47,6 @@ public class RatingService {
 
 
     private Member getMember(Long memberId) {
-        return memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
+        return memberComponent.findById(memberId);
     }
 }
