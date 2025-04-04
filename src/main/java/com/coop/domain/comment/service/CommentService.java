@@ -82,7 +82,7 @@ public class CommentService {
 
     private Comment findParentComment(Long parentId, Long postId) {
         Comment parent = commentRepository.findById(parentId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMENT));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!parent.getPost().getId().equals(postId)) {
             throw new InvalidRequestException(ErrorCode.INVALID_PARENT_ID);
@@ -93,7 +93,7 @@ public class CommentService {
 
     private Comment getCommentById(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_COMMENT));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
     private void validateAccess(Comment comment, User userDetails) {

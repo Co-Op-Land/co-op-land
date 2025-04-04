@@ -6,6 +6,7 @@ import com.coop.domain.playHistory.repository.HistoryRepository;
 import com.coop.domain.player.entity.Player;
 import com.coop.domain.player.service.PlayerService;
 import com.coop.domain.room.entity.Room;
+import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.playHistory.dto.response.HistoryResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,8 @@ public class HistoryService {
 
     @Transactional
     public void modifyHistoryToCompleted(Long roomId) {
-        History history = historyRepository.findByRoomId(roomId).orElseThrow(NotFoundException::new);
+        History history = historyRepository.findByRoomId(roomId)
+                .orElseThrow(()-> new NotFoundException(ErrorCode.HISTORY_NOT_FOUND));
         history.ProcessHistoryComplete();
     }
 

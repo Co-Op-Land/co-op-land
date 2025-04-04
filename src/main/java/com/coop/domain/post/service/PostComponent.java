@@ -15,6 +15,6 @@ public class PostComponent {
 
     public Post findById(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 }

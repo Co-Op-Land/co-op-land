@@ -48,7 +48,7 @@ public class PostService {
 
     public PostResponse getPost(Long postId, Pageable pageable) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
         Page<Comment> comments = commentService.findAllByPost_IdAndParentIsNull(postId, pageable);
         Page<PostCommentsResponse> commentPage = comments.map(PostCommentsResponse::of);
 
@@ -73,7 +73,7 @@ public class PostService {
 
     private Post getPostById(Long postId) {
         return postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
     private void validateAccess(Post post, UserDetails userDetails) {
