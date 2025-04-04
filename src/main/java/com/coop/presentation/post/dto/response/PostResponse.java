@@ -2,7 +2,7 @@ package com.coop.presentation.post.dto.response;
 
 import com.coop.domain.post.entity.Post;
 import com.coop.domain.post.enums.PostCategory;
-import com.coop.presentation.comment.dto.response.CommentsResponse;
+import com.coop.presentation.comment.dto.response.PostCommentsResponse;
 import lombok.Builder;
 import org.springframework.data.domain.Page;
 
@@ -18,12 +18,12 @@ public record PostResponse(
         String content,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<CommentsResponse> commentList,
+        List<PostCommentsResponse> commentList,
         int currentPage,
         int totalPages,
         boolean hasNext
 ) {
-    public static PostResponse from(Post post, Page<CommentsResponse> pageResponse) {
+    public static PostResponse from(Post post, Page<PostCommentsResponse> pageResponse) {
         return PostResponse.builder()
                 .id(post.getId())
                 .category(post.getCategory())

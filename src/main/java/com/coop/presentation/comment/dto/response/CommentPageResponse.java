@@ -6,9 +6,14 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Builder
-public record CommentPageResponse(List<CommentsResponse> comments, int currentPage, int totalPages, boolean hasNext) {
-    public static CommentPageResponse from(Page<CommentsResponse> pageResponse) {
-        return CommentPageResponse.builder()
+public record CommentPageResponse<T>(
+        List<T> comments,
+        int currentPage,
+        int totalPages,
+        boolean hasNext) {
+
+    public static <T> CommentPageResponse<T> from(Page<T> pageResponse) {
+        return CommentPageResponse.<T>builder()
                 .comments(pageResponse.getContent())
                 .currentPage(pageResponse.getNumber())
                 .totalPages(pageResponse.getTotalPages())
