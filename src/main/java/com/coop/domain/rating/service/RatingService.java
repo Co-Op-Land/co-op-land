@@ -4,7 +4,6 @@ import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.rating.entity.Rating;
 import com.coop.domain.rating.repository.RatingRepository;
-import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.rating.dto.request.RatingRequest;
 import com.coop.presentation.rating.dto.response.RatingResponse;
 import lombok.RequiredArgsConstructor;
