@@ -45,7 +45,7 @@ public class RoomPlayerRepository {
     }
 
     public Set<Long> getPlayerInRoom(Long roomId) {
-        if (isRoomExists(roomId)) {
+        if (!isRoomExists(roomId)) {
             throw new NotFoundException(ErrorCode.ROOM_NOT_FOUND);
         }
 

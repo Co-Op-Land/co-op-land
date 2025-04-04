@@ -26,15 +26,23 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
+    @Column(nullable = false)
+    private double rating;
+
     @Builder
     public Member(Role role, String email, String password, String nickname) {
         this.role = role != null ? role : Role.USER;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.rating = 0;
     }
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    public void updateRating(double rating) {
+        this.rating = rating;
     }
 }
