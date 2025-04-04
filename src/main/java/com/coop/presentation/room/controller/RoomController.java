@@ -5,12 +5,16 @@ import com.coop.global.common.ApiResponse;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateStatusRequest;
+import com.coop.presentation.room.dto.response.RoomReadDetailResponse;
+import com.coop.presentation.room.dto.response.RoomReadResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/rooms")
@@ -27,6 +31,18 @@ public class RoomController {
         Long roomId = roomService.generateRoom(Long.valueOf(userDetails.getUsername()), request);
 
         return ApiResponse.created(roomId);
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<RoomReadResponse>>> readRooms() {
+        return ApiResponse.success(roomService.findRooms());
+    }
+
+    @GetMapping("/{roomId}")
+    public ResponseEntity<ApiResponse<RoomReadDetailResponse>> readRooms(
+            @PathVariable Long roomId
+    ) {
+        return ApiResponse.success(roomService.findRoom(roomId));
     }
 
     @PatchMapping("/{roomId}")

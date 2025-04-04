@@ -44,13 +44,16 @@ public class RoomPlayerRepository {
         playerToRoom.remove(memberId);
     }
 
-    public boolean isRoomExists(Long roomId) {
-        return roomPlayers.containsKey(roomId);
+    public Set<Long> getPlayerInRoom(Long roomId) {
+        if (isRoomExists(roomId)) {
+            throw new NotFoundException(ErrorCode.ROOM_NOT_FOUND);
+        }
+
+        return roomPlayers.get(roomId);
     }
 
-    public int getPlayerCount(Long roomId) {
-        return roomPlayers.getOrDefault(roomId, Collections.emptySet())
-                .size();
+    public boolean isRoomExists(Long roomId) {
+        return roomPlayers.containsKey(roomId);
     }
 
     private boolean isPlayerInAnyRoom(Long memberId) {

@@ -13,9 +13,16 @@ import com.coop.global.repository.RoomPlayerRepository;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateStatusRequest;
+import com.coop.presentation.room.dto.response.RoomReadDetailResponse;
+import com.coop.presentation.room.dto.response.RoomReadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +39,32 @@ public class RoomService {
         Game game = findGameById(request.gameId());
 
         Room room = roomRepository.save(request.toEntity(member, game));
-
         roomPlayerRepository.addPlayer(room.getId(), memberId, room.getMaxPlayerCount());
 
         return room.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoomReadResponse> findRooms() {
+        List<Room> rooms = roomRepository.findAll();
+        Map<Long, Integer> currentPlayerCountInRoom = rooms.stream()
+                .collect(Collectors.toMap(
+                        Room::getId,
+                        room -> roomPlayerRepository.getPlayerInRoom(room.getId()).size()
+                ));
+
+        return rooms.stream()
+                .map(room -> RoomReadResponse.of(room, currentPlayerCountInRoom.get(room.getId())))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public RoomReadDetailResponse findRoom(Long roomId) {
+        Room room = findRoomById(roomId);
+        Set<Long> playerInRoom = roomPlayerRepository.getPlayerInRoom(room.getId());
+        List<Member> players = memberRepository.findMembersByIds(playerInRoom);
+
+        return RoomReadDetailResponse.of(room, players);
     }
 
     @Transactional
@@ -83,7 +112,7 @@ public class RoomService {
     // 헬퍼
     private Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
     }
 
     private Game findGameById(Long gameId) {
