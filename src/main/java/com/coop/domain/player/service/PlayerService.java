@@ -4,7 +4,6 @@ import com.coop.domain.member.entity.Member;
 import com.coop.domain.playHistory.entity.History;
 import com.coop.domain.player.entity.Player;
 import com.coop.domain.player.repository.PlayerRepository;
-import com.coop.domain.player.repository.PlayerRepositoryCustomImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
