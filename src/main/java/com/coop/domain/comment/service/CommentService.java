@@ -3,16 +3,17 @@ package com.coop.domain.comment.service;
 import com.coop.domain.comment.entity.Comment;
 import com.coop.domain.comment.repository.CommentRepository;
 import com.coop.domain.member.entity.Member;
-import com.coop.domain.member.repository.MemberRepository;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.post.entity.Post;
-import com.coop.domain.post.repository.PostRepository;
+import com.coop.domain.post.service.PostComponent;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.AccessDeniedException;
 import com.coop.global.exception.error.InvalidRequestException;
 import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.comment.dto.request.CommentRequest;
 import com.coop.presentation.comment.dto.response.CommentPageResponse;
-import com.coop.presentation.comment.dto.response.CommentsResponse;
+import com.coop.presentation.comment.dto.response.MemberCommentResponse;
+import com.coop.presentation.comment.dto.response.PostCommentsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,14 +29,13 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final MemberRepository memberRepository;
-    private final PostRepository postRepository;
+    private final MemberComponent memberComponent;
+    private final PostComponent postComponent;
 
     @Transactional
     public Long generateComment(User userDetails, Long postId, CommentRequest request) {
-        Member member = memberRepository.getReferenceById(Long.valueOf(userDetails.getUsername()));
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST));
+        Member member = memberComponent.findMemberReference(Long.valueOf(userDetails.getUsername()));
+        Post post = postComponent.findById(postId);
 
         Comment comment = Optional.ofNullable(request.parentId())
                 .map(parentId -> findParentComment(parentId, postId))
@@ -52,14 +52,14 @@ public class CommentService {
 
     public CommentPageResponse getMemberComments(Long memberId, Pageable pageable) {
         Page<Comment> comments = commentRepository.findAllByMember_Id(memberId, pageable);
-        Page<CommentsResponse> commentPage = comments.map(CommentsResponse::of);
+        Page<MemberCommentResponse> commentPage = comments.map(MemberCommentResponse::of);
 
         return CommentPageResponse.from(commentPage);
     }
 
     public CommentPageResponse getPostComments(Long postId, Pageable pageable) {
-        Page<Comment> comments = commentRepository.findAllByPost_IdAndParentIsNull(postId, pageable);
-        Page<CommentsResponse> commentPage = comments.map(CommentsResponse::of);
+        Page<Comment> comments = findAllByPost_IdAndParentIsNull(postId, pageable);
+        Page<PostCommentsResponse> commentPage = comments.map(PostCommentsResponse::of);
 
         return CommentPageResponse.from(commentPage);
     }
@@ -100,5 +100,9 @@ public class CommentService {
         if (!comment.getMember().getId().equals(Long.valueOf(userDetails.getUsername()))) {
             throw new AccessDeniedException();
         }
+    }
+
+    public Page<Comment> findAllByPost_IdAndParentIsNull(Long postId, Pageable pageable) {
+        return commentRepository.findAllByPost_IdAndParentIsNull(postId, pageable);
     }
 }
