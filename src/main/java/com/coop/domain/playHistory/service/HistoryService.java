@@ -23,6 +23,7 @@ public class HistoryService {
     private final HistoryRepository historyRepository;
     private final PlayerService playerService;
 
+    @Transactional
     public History generateHistory(Room room, List<Member> members) {
         History history = History.builder()
                 .room(room)
