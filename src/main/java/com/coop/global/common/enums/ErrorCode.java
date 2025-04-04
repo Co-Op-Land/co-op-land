@@ -26,6 +26,12 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "401", "패스워드가 잘못되었습니다."),
 
     // Post
+    NOT_FOUND_POST(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시물입니다."),
+    INVALID_POST_CATEGORY(HttpStatus.BAD_REQUEST, "400", "게시물 카테고리가 잘못되었습니다."),
+
+    // Comment
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404", "존재하지 않는 댓글입니다."),
+    INVALID_PARENT_ID(HttpStatus.BAD_REQUEST, "404", "답글을 달려는 댓글을 찾을 수 없습니다."),
 
     // Game
     GAME_NOT_FOUND(HttpStatus.NOT_FOUND, "G404", "존재하지 않는 게임입니다."),
@@ -34,10 +40,7 @@ public enum ErrorCode {
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "R404", "존재하지 않는 방입니다."),
     MEMBER_NOT_IN_ROOM(HttpStatus.NOT_FOUND, "R400", "유저가 해당 방에 없습니다."),
     MEMBER_ALREADY_IN_ROOM(HttpStatus.CONFLICT, "R409", "이미 방에 접속중입니다."),
-    ROOM_IS_FULL(HttpStatus.BAD_REQUEST, "R400", "방이 가득 찼습니다.")
-
-
-    ;
+    ROOM_IS_FULL(HttpStatus.BAD_REQUEST, "R400", "방이 가득 찼습니다.");
     private final HttpStatus status;
     private final String code;
     private final String message;
