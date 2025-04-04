@@ -32,8 +32,8 @@ public class HistoryService {
     }
 
     @Transactional
-    public void modifyHistoryToCompleted(Long historyId) {
-        History history = historyRepository.findById(historyId).orElseThrow(NotFoundException::new);
+    public void modifyHistoryToCompleted(Long roomId) {//room id로
+        History history = historyRepository.findByRoomId(roomId).orElseThrow(NotFoundException::new);
         history.ProcessHistoryComplete();
     }
 
