@@ -20,20 +20,20 @@ public class RatingService {
     private final MemberRepository memberRepository;
 
     public Rating generateReview(RatingRequest request, Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
+        Member member = getMember(memberId);
         Rating rating = request.toEntity(member);
         //member에 rating 값 갱신
         return ratingRepository.save(rating);
     }
 
     public List<RatingResponse> findReviews(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
+        Member member = getMember(memberId);
         List<Rating> ratings = ratingRepository.findByToMember(member);
         return ratings.stream().map(RatingResponse::from).toList();
     }
 
     public double findRatingAverage(Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
+        Member member = getMember(memberId);
         List<Rating> reviews = ratingRepository.findByToMember(member);
         return reviews.stream()
                 .mapToInt(Rating::getScore)
@@ -43,5 +43,10 @@ public class RatingService {
 
     public void removeRating(Long id) {
         ratingRepository.deleteById(id);
+    }
+
+
+    private Member getMember(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
     }
 }
