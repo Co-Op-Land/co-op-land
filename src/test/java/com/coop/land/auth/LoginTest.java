@@ -3,7 +3,7 @@ package com.coop.land.auth;
 import com.coop.domain.auth.service.AuthService;
 import com.coop.domain.auth.service.RefreshTokenService;
 import com.coop.domain.member.entity.Member;
-import com.coop.domain.member.repository.MemberRepository;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.InvalidRequestException;
 import com.coop.global.security.JwtUtil;
@@ -15,8 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +28,7 @@ public class LoginTest {
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberComponent memberComponent;
 
     @Mock
     private JwtUtil jwtUtil;
@@ -46,7 +44,7 @@ public class LoginTest {
         //given
         LoginRequest dto = new LoginRequest("test@example.com", "password");
         Member member = mock(Member.class);
-        when(memberRepository.findByEmail(dto.email())).thenReturn(Optional.ofNullable(member));
+        when(memberComponent.findByEmail(dto.email())).thenReturn(member);
         when(passwordEncoder.matches(dto.password(), member.getPassword())).thenReturn(true);
         when(jwtUtil.createToken(anyLong(), any())).thenReturn("accessToken");
         when(jwtUtil.createRefreshToken(anyLong())).thenReturn("refreshToken");
@@ -66,7 +64,7 @@ public class LoginTest {
         //given
         LoginRequest dto = new LoginRequest("test@example.com", "wrongpassword");
         Member member = mock(Member.class);
-        when(memberRepository.findByEmail(dto.email())).thenReturn(Optional.ofNullable(member));
+        when(memberComponent.findByEmail(dto.email())).thenReturn(member);
         when(passwordEncoder.matches(dto.password(), member.getPassword())).thenReturn(false);
 
         //when & then

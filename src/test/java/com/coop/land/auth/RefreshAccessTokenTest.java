@@ -3,7 +3,7 @@ package com.coop.land.auth;
 import com.coop.domain.auth.service.AuthService;
 import com.coop.domain.auth.service.RefreshTokenService;
 import com.coop.domain.member.entity.Member;
-import com.coop.domain.member.repository.MemberRepository;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.UnAuthorizedException;
 import com.coop.global.security.JwtUtil;
@@ -15,8 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -25,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class RefreshAccessTokenTest {
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberComponent memberComponent;
 
     @Mock
     private JwtUtil jwtUtil;
@@ -49,7 +47,7 @@ public class RefreshAccessTokenTest {
         when(jwtUtil.substringToken(refreshToken)).thenReturn("validRefreshToken");
         when(jwtUtil.substringToken("validRefreshToken")).thenReturn("validRefreshToken");
         when(jwtUtil.createRefreshToken(1L)).thenReturn("newRefreshToken");
-        when(memberRepository.findById(1L)).thenReturn(Optional.ofNullable(member));
+        when(memberComponent.findById(1L)).thenReturn(member);
         when(jwtUtil.createToken(1L, member.getRole())).thenReturn("newAccessToken");
 
         //when

@@ -1,7 +1,7 @@
 package com.coop.land.member;
 
 import com.coop.domain.member.entity.Member;
-import com.coop.domain.member.repository.MemberRepository;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.member.service.MemberService;
 import com.coop.global.exception.error.InvalidRequestException;
 import com.coop.land.util.TestUtils;
@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,7 +25,7 @@ public class UpdatePasswordTest {
     private MemberService memberService;
 
     @Mock
-    private MemberRepository memberRepository;
+    private MemberComponent memberComponent;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -45,7 +44,7 @@ public class UpdatePasswordTest {
                 "password", encodedPassword
         ));
 
-        when(memberRepository.findById(userId)).thenReturn(Optional.of(mockMember));
+        when(memberComponent.findById(userId)).thenReturn(mockMember);
         when(passwordEncoder.matches(oldPassword, mockMember.getPassword())).thenReturn(true);
         when(passwordEncoder.encode(newPassword)).thenReturn(encodedPassword);
 
@@ -64,7 +63,7 @@ public class UpdatePasswordTest {
                 "password", encodedPassword
         ));
 
-        when(memberRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+        when(memberComponent.findById(userId)).thenReturn(mockUser);
         when(passwordEncoder.matches("wrongPassword", mockUser.getPassword())).thenReturn(false);
 
         InvalidRequestException exception = assertThrows(InvalidRequestException.class, () ->
