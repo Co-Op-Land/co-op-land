@@ -2,9 +2,9 @@ package com.coop.domain.auth.service;
 
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.repository.MemberRepository;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.InvalidRequestException;
-import com.coop.global.exception.error.NotFoundException;
 import com.coop.global.exception.error.UnAuthorizedException;
 import com.coop.global.security.JwtSecurityProperties;
 import com.coop.global.security.JwtUtil;
@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final MemberComponent memberComponent;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -33,9 +34,7 @@ public class AuthService {
      * 회원가입
      */
     public void signup(SignupRequest dto) {
-        if (memberRepository.existsByEmail(dto.email())) {
-            throw new InvalidRequestException(ErrorCode.ALREADY_EXIST_EMAIL);
-        }
+        memberComponent.isExist(dto.email());
         String encodedPassword = passwordEncoder.encode(dto.password());
         Member member = SignupRequest.toEntity(
                 dto.email(),
@@ -49,8 +48,7 @@ public class AuthService {
      * 로그인: AccessToken, RefreshToken 생성
      */
     public LoginResponse login(LoginRequest dto) {
-        Member member = memberRepository.findByEmail(dto.email())
-                .orElseThrow(() -> new InvalidRequestException(ErrorCode.INVALID_EMAIL));
+        Member member = memberComponent.findByEmail(dto.email());
         if (!passwordEncoder.matches(dto.password(), member.getPassword())) {
             throw new InvalidRequestException(ErrorCode.INVALID_PASSWORD);
         }
@@ -100,8 +98,7 @@ public class AuthService {
         String newRefreshToken = jwtUtil.createRefreshToken(memberId);
         refreshTokenService.createRefreshToken(memberId, newRefreshToken);
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
+        Member member = memberComponent.findById(memberId);
         String newAccessToken = jwtUtil.createToken(memberId, member.getRole());
         return RefreshAccessTokenResponse.from(newAccessToken, newRefreshToken);
     }

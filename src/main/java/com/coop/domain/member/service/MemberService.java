@@ -1,10 +1,8 @@
 package com.coop.domain.member.service;
 
 import com.coop.domain.member.entity.Member;
-import com.coop.domain.member.repository.MemberRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.InvalidRequestException;
-import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.member.dto.request.UpdatePasswordRequest;
 import com.coop.presentation.member.dto.response.MemberResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
-    private final MemberRepository memberRepository;
+    private final MemberComponent memberComponent;
 
     /**
      * member 정보 조회
      */
     public MemberResponse readUser(Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
+        Member member = memberComponent.findById(id);
         return MemberResponse.from(id, member.getEmail(), member.getNickname());
     }
 
@@ -33,8 +30,7 @@ public class MemberService {
      */
     @Transactional
     public void updatePassword(Long id, UpdatePasswordRequest requestDto) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND));
+        Member member = memberComponent.findById(id);
         if(!passwordEncoder.matches(requestDto.oldPassword(), member.getPassword())) {
             throw new InvalidRequestException(ErrorCode.INVALID_PASSWORD);
         }
