@@ -3,7 +3,7 @@ package com.coop.domain.room.service;
 import com.coop.domain.game.entity.Game;
 import com.coop.domain.game.repository.GameRepository;
 import com.coop.domain.member.entity.Member;
-import com.coop.domain.member.repository.MemberRepository;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.room.entity.Room;
 import com.coop.domain.room.repository.RoomRepository;
 import com.coop.global.common.enums.ErrorCode;
@@ -30,7 +30,7 @@ public class RoomService {
 
     private final RoomRepository roomRepository;
     private final RoomPlayerRepository roomPlayerRepository;
-    private final MemberRepository memberRepository;
+    private final MemberComponent memberComponent;
     private final GameRepository gameRepository;
 
     @Transactional
@@ -62,10 +62,12 @@ public class RoomService {
     public RoomReadDetailResponse findRoom(Long roomId) {
         Room room = findRoomById(roomId);
         Set<Long> playerInRoom = roomPlayerRepository.getPlayerInRoom(room.getId());
-        List<Member> players = memberRepository.findMembersByIds(playerInRoom);
+        List<Member> players = memberComponent.getMembers(playerInRoom);
 
         return RoomReadDetailResponse.of(room, players);
     }
+
+
 
     @Transactional
     public void modifyRoom(Long memberId, Long roomId, RoomUpdateRequest request) {
@@ -111,8 +113,7 @@ public class RoomService {
 
     // 헬퍼
     private Member findMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
+        return memberComponent.findById(memberId);
     }
 
     private Game findGameById(Long gameId) {

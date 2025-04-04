@@ -7,6 +7,9 @@ import com.coop.global.exception.error.InvalidRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+
 @Component
 @RequiredArgsConstructor
 public class MemberComponent {
@@ -23,6 +26,10 @@ public class MemberComponent {
 
     public Member findMemberReference(Long id) {
         return memberRepository.getReferenceById(id);
+    }
+
+    public List<Member> getMembers(Set<Long> playerInRoom) {
+        return memberRepository.findMembersByIds(playerInRoom);
     }
 
     public void isExist(Long id) {
