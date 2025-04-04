@@ -8,13 +8,15 @@ import lombok.Builder;
 public record MemberResponse(
         Long id,
         String email,
-        String name
+        String name,
+        double rating
 ) {
-    public static MemberResponse from(Long id, String email, String name) {
+    public static MemberResponse from(Long id, String email, String name, double rating) {
         return MemberResponse.builder()
                 .id(id)
                 .email(email)
                 .name(name)
+                .rating(rating)
                 .build();
     }
 }

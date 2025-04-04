@@ -19,7 +19,7 @@ public record HistoryResponse(
                 .members(players.stream()
                         .map(player -> {
                             var member = player.getMember();
-                            return MemberResponse.from(member.getId(), null, member.getNickname());
+                            return MemberResponse.from(member.getId(), null, member.getNickname(), member.getRating());
                         })
                         .toList())
                 .build();
