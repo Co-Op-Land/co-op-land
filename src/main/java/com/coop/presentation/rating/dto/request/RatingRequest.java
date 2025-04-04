@@ -8,17 +8,17 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public class RatingRequest {
-    @NotNull
-    private History history;
-    @NotNull
-    private Member toMember;
-    @NotNull
-    private int score;
-    @NotBlank
-    private String reason;
-
-    public Rating toEntity(Member fromMember) {
+public record RatingRequest(
+        @NotNull
+        Long historyId,
+        @NotNull
+        Long toMemberId,
+        @NotNull
+        int score,
+        @NotBlank
+        String reason
+) {
+    public Rating toEntity(Member fromMember, History history, Member toMember) {
         return Rating.builder()
                 .history(history)
                 .toMember(toMember)
