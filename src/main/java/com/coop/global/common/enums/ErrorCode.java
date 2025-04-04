@@ -44,7 +44,7 @@ public enum ErrorCode {
     ROOM_IS_FULL(HttpStatus.BAD_REQUEST, "R400", "방이 가득 찼습니다."),
 
     //History
-    HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "R404", "존재하지 않는 방입니다."),
+    HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "H404", "존재하지 않는 방입니다."),
     ;
     private final HttpStatus status;
     private final String code;
