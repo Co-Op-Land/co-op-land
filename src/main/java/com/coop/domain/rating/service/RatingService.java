@@ -6,6 +6,7 @@ import com.coop.domain.playHistory.entity.History;
 import com.coop.domain.playHistory.service.HistoryComponent;
 import com.coop.domain.rating.entity.Rating;
 import com.coop.domain.rating.repository.RatingRepository;
+import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.NotFoundException;
 import com.coop.presentation.rating.dto.request.RatingRequest;
 import com.coop.presentation.rating.dto.response.RatingResponse;
@@ -36,7 +37,7 @@ public class RatingService {
 
         History history = historyComponent.findById(request.historyId());
 
-        Rating rating = request.toEntity(fromMember,history,toMember);
+        Rating rating = request.toEntity(fromMember, history, toMember);
         toMember.updateRating(findRatingAverage(toMember.getId()));
         return ratingRepository.save(rating);
     }
@@ -45,7 +46,7 @@ public class RatingService {
         return members.stream()
                 .filter(member -> member.getId().equals(memberId))
                 .findFirst()
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     public List<RatingResponse> findReviews(Long memberId) {
