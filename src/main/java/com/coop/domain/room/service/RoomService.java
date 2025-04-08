@@ -4,6 +4,7 @@ import com.coop.domain.game.entity.Game;
 import com.coop.domain.game.repository.GameRepository;
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
+import com.coop.domain.playHistory.service.HistoryService;
 import com.coop.domain.room.entity.Room;
 import com.coop.domain.room.repository.RoomRepository;
 import com.coop.global.common.enums.ErrorCode;
@@ -32,10 +33,11 @@ public class RoomService {
     private final RoomPlayerRepository roomPlayerRepository;
     private final MemberComponent memberComponent;
     private final GameRepository gameRepository;
+    private final HistoryService historyService;
 
     @Transactional
     public Long generateRoom(Long memberId, RoomCreateRequest request) {
-        Member member = findMemberById(memberId);
+        Member member = memberComponent.findById(memberId);
         Game game = findGameById(request.gameId());
 
         Room room = roomRepository.save(request.toEntity(member, game));
@@ -67,8 +69,6 @@ public class RoomService {
         return RoomReadDetailResponse.of(room, players);
     }
 
-
-
     @Transactional
     public void modifyRoom(Long memberId, Long roomId, RoomUpdateRequest request) {
         Room room = findRoomById(roomId);
@@ -84,6 +84,13 @@ public class RoomService {
 
         checkUserAuthority(room.getHost().getId(), memberId);
 
+        Set<Long> playerInRoom = roomPlayerRepository.getPlayerInRoom(room.getId());
+        List<Member> players = memberComponent.getMembers(playerInRoom);
+
+        switch (request.status()) {
+            case PLAYING -> historyService.generateHistory(room, players);
+            case COMPLETED -> historyService.modifyHistoryToCompleted(room.getId());
+        }
         room.updateStatus(request.status());
     }
 
@@ -112,10 +119,6 @@ public class RoomService {
     }
 
     // 헬퍼
-    private Member findMemberById(Long memberId) {
-        return memberComponent.findById(memberId);
-    }
-
     private Game findGameById(Long gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
