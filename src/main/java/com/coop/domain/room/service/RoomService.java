@@ -1,7 +1,7 @@
 package com.coop.domain.room.service;
 
 import com.coop.domain.game.entity.Game;
-import com.coop.domain.game.repository.GameRepository;
+import com.coop.domain.game.service.GameComponent;
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.playHistory.service.HistoryService;
@@ -29,16 +29,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoomService {
 
+    private final MemberComponent memberComponent;
+    private final GameComponent gameComponent;
+    private final HistoryService historyService;
     private final RoomRepository roomRepository;
     private final RoomPlayerRepository roomPlayerRepository;
-    private final MemberComponent memberComponent;
-    private final GameRepository gameRepository;
-    private final HistoryService historyService;
 
     @Transactional
     public Long generateRoom(Long memberId, RoomCreateRequest request) {
         Member member = memberComponent.findById(memberId);
-        Game game = findGameById(request.gameId());
+        Game game = gameComponent.findGameById(request.gameId());
 
         Room room = roomRepository.save(request.toEntity(member, game));
         roomPlayerRepository.addPlayer(room.getId(), memberId, room.getMaxPlayerCount());
@@ -119,10 +119,6 @@ public class RoomService {
     }
 
     // 헬퍼
-    private Game findGameById(Long gameId) {
-        return gameRepository.findById(gameId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
-    }
 
     private void checkUserAuthority(Long userId, Long loginUserId) {
         if (!userId.equals(loginUserId)) {
