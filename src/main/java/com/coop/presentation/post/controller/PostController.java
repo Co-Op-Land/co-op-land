@@ -1,6 +1,7 @@
 package com.coop.presentation.post.controller;
 
 import com.coop.domain.post.entity.Post;
+import com.coop.domain.post.enums.PostCategory;
 import com.coop.domain.post.service.PostService;
 import com.coop.global.common.ApiResponse;
 import com.coop.presentation.post.dto.request.PostRequest;
@@ -52,13 +53,6 @@ public class PostController {
     ) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").ascending());
         return ApiResponse.success(postService.getPost(postId, pageable));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<PostSearchResponse>>> readPostBySearch(
-            @RequestParam String keyword
-    ) {
-        return ApiResponse.success(postService.findPostByKeyword(keyword));
     }
 
     @PatchMapping("/{postId}")
