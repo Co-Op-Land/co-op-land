@@ -32,6 +32,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String[] data = claims.getSubject().split(":");
         Long memberId = Long.valueOf(data[0]);
 
-        sessionManager.removeSession(memberId);
+        sessionManager.removeSession(memberId, session);
     }
 }

@@ -6,30 +6,32 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 @Slf4j
 public class WebSocketSessionManager {
 
-    private final ConcurrentHashMap<Long, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long, CopyOnWriteArrayList<WebSocketSession>> sessions = new ConcurrentHashMap<>();
 
     public void addSession(Long memberId, WebSocketSession session) {
-        sessions.put(memberId, session);
+        sessions.computeIfAbsent(memberId, k -> new CopyOnWriteArrayList<>()).add(session);
     }
 
-    public void removeSession(Long memberId) {
-        sessions.remove(memberId);
-    }
-
-    public WebSocketSession getSession(Long memberId) {
-        return sessions.get(memberId);
+    public void removeSession(Long memberId, WebSocketSession session) {
+        List<WebSocketSession> memberSessions = sessions.get(memberId);
+        if (memberSessions != null) {
+            memberSessions.remove(session);
+            if (memberSessions.isEmpty()) {
+                sessions.remove(memberId);
+            }
+        }
     }
 
     public void sendNotificationToMember(Long memberId, String message) {
-        sendNotification(Collections.singletonList(memberId), message);
+        sendNotification(List.of(memberId), message);
     }
 
     public void sendNotificationToMember(List<Long> memberIds, String message) {
@@ -38,21 +40,23 @@ public class WebSocketSessionManager {
 
     private void sendNotification(List<Long> memberIds, String message) {
         for (Long memberId : memberIds) {
-            WebSocketSession session = getSession(memberId);
-            if (session != null) {
-                try {
-                    if (session.isOpen()) {
-                        session.sendMessage(new TextMessage(message));
-                    } else {
-                        log.warn("유저 {}의 웹소켓 세션을 삭제합니다.", memberId);
-                        removeSession(memberId);
+            List<WebSocketSession> memberSessions = sessions.get(memberId);
+            if (memberSessions != null) {
+                for (WebSocketSession session : memberSessions) {
+                    try {
+                        if (session.isOpen()) {
+                            session.sendMessage(new TextMessage(message));
+                        } else {
+                            log.warn("세션이 닫혀있습니다. 유저 {}의 세션 제거", memberId);
+                            removeSession(memberId, session);
+                        }
+                    } catch (IOException e) {
+                        log.error("유저 {}에게 메시지 전송 실패: {}", memberId, e.getMessage());
+                        removeSession(memberId, session);
                     }
-                } catch (IOException e) {
-                    log.error("유저 {}에게 웹소켓 메시지 전송을 실패하였습니다: {}", memberId, e.getMessage());
-                    removeSession(memberId);
                 }
             } else {
-                log.warn("유저 {}의 웹소켓 연결 에러", memberId);
+                log.warn("유저 {}의 웹소켓 세션이 존재하지 않음", memberId);
             }
         }
     }
