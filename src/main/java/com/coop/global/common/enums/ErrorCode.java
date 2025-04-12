@@ -45,6 +45,9 @@ public enum ErrorCode {
 
     //History
     HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "H404", "존재하지 않는 방입니다."),
+
+    //Notification
+    INVALID_NOTIFICATION_TYPE(HttpStatus.BAD_REQUEST, "N400", "존재하지 않는 알림 타입입니다.")
     ;
     private final HttpStatus status;
     private final String code;

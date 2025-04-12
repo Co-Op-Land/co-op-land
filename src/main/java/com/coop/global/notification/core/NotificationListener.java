@@ -1,4 +1,4 @@
-package com.coop.global.notification;
+package com.coop.global.notification.core;
 
 import com.coop.global.websocket.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.coop.global.notification;
+package com.coop.global.notification.values;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package com.coop.global.notification;
+package com.coop.global.notification.values;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

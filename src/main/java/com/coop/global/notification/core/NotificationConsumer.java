@@ -1,5 +1,6 @@
-package com.coop.global.notification;
+package com.coop.global.notification.core;
 
+import com.coop.global.notification.values.NotificationEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

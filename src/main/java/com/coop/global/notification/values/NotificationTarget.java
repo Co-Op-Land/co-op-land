@@ -1,4 +1,4 @@
-package com.coop.global.notification;
+package com.coop.global.notification.values;
 
 public enum NotificationTarget {
     COMMENT
