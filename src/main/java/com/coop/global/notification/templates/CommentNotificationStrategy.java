@@ -47,7 +47,7 @@ public class CommentNotificationStrategy implements NotificationStrategy {
             Comment comment = commentRepository.findById(commentId).orElseThrow();
             if (comment.getParent() != null) {
                 Long parentWriterId = comment.getParent().getMember().getId();
-                toMemberIds.add(parentWriterId); // 중복/자기자신 자동 필터링
+                toMemberIds.add(parentWriterId);
             }
         }
 

@@ -34,10 +34,6 @@ public class WebSocketSessionManager {
         sendNotification(List.of(memberId), message);
     }
 
-    public void sendNotificationToMember(List<Long> memberIds, String message) {
-        sendNotification(memberIds, message);
-    }
-
     private void sendNotification(List<Long> memberIds, String message) {
         for (Long memberId : memberIds) {
             List<WebSocketSession> memberSessions = sessions.get(memberId);
