@@ -1,8 +1,8 @@
-package com.coop.domain.notification;
+package com.coop.domain.notification.entity;
 
 import com.coop.domain.member.entity.Member;
 import com.coop.global.common.BaseEntity;
-import com.coop.global.notification.values.NotificationTarget;
+import com.coop.domain.notification.enums.NotificationTarget;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

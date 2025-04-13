@@ -1,5 +1,6 @@
-package com.coop.domain.notification;
+package com.coop.domain.notification.repository;
 
+import com.coop.domain.notification.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {

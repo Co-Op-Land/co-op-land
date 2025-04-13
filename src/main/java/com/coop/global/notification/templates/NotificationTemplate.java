@@ -1,7 +1,7 @@
 package com.coop.global.notification.templates;
 
 import com.coop.global.notification.values.NotificationEvent;
-import com.coop.global.notification.values.NotificationTarget;
+import com.coop.domain.notification.enums.NotificationTarget;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 

@@ -1,7 +1,7 @@
 package com.coop.global.security;
 
 import com.coop.domain.auth.service.BlackListService;
-import com.coop.domain.member.entity.Role;
+import com.coop.domain.member.enums.Role;
 import com.coop.global.exception.FilterExceptionHandler;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

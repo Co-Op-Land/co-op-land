@@ -1,4 +1,4 @@
-package com.coop.domain.notification;
+package com.coop.domain.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

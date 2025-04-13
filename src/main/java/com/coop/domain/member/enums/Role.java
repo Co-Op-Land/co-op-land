@@ -1,4 +1,4 @@
-package com.coop.domain.member.entity;
+package com.coop.domain.member.enums;
 
 import org.springframework.security.core.GrantedAuthority;
 

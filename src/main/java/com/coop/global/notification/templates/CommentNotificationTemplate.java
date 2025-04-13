@@ -3,7 +3,7 @@ package com.coop.global.notification.templates;
 import com.coop.domain.post.entity.Post;
 import com.coop.domain.post.repository.PostRepository;
 import com.coop.global.notification.values.NotificationEvent;
-import com.coop.global.notification.values.NotificationTarget;
+import com.coop.domain.notification.enums.NotificationTarget;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
