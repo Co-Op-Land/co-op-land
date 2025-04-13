@@ -12,6 +12,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ToMemberIds {
+
     private List<Long> values;
 
     public ToMemberIds(List<Long> toMemberIds, Long fromMemberId) {

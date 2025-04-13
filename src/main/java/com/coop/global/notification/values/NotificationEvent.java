@@ -15,5 +15,4 @@ public class NotificationEvent {
     private Long fromMemberId;
     private ToMemberIds toMemberIds;
     private Long relatedId;
-    private String content;
 }
