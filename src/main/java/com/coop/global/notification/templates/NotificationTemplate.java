@@ -7,8 +7,6 @@ import com.coop.domain.notification.enums.NotificationTarget;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 
-import java.util.Objects;
-
 @RequiredArgsConstructor
 public abstract class NotificationTemplate {
 
@@ -23,7 +21,7 @@ public abstract class NotificationTemplate {
     }
 
     protected boolean validate(NotificationEvent event) {
-        return !Objects.equals(event.getToMemberId(), event.getFromMemberId());
+        return !event.getRecipients().isEmpty();
     }
 
     protected void save(NotificationEvent event) {
@@ -31,8 +29,9 @@ public abstract class NotificationTemplate {
                 .relatedId(event.getRelatedId())
                 .target(event.getTarget())
                 .fromMemberId(event.getFromMemberId())
-                .toMemberId(event.getToMemberId())
                 .build();
+
+        event.getRecipients().addTo(notification);
         notificationRepository.save(notification);
     }
 

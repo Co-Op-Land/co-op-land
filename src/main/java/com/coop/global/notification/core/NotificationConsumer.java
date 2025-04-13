@@ -19,12 +19,12 @@ public class NotificationConsumer {
     @KafkaListener(topics = "notification.comment", groupId = "notification-group")
     public void consume(NotificationEvent event) {
         try {
-            String redisChannel = "noti:member:" + event.getToMemberId();
-
             String payload = objectMapper.writeValueAsString(event);
-            redisTemplate.convertAndSend(redisChannel, payload);
-
-            log.info("Kafka → Redis Pub/Sub 전송 완료: {}, 채널: {}", event, redisChannel);
+            for (Long toMemberId : event.getRecipients().getValues()) {
+                String redisChannel = "noti:member:" + toMemberId;
+                redisTemplate.convertAndSend(redisChannel, payload);
+                log.info("Kafka → Redis Pub/Sub 전송 완료: {}, 채널: {}", event, redisChannel);
+            }
         } catch (Exception e) {
             log.error("Redis Pub/Sub 전송 실패", e);
             //TODO: retry topic 전송도 고려 가능

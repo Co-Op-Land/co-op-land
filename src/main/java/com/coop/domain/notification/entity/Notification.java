@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "notification")
 @Getter
@@ -25,17 +28,24 @@ public class Notification extends BaseEntity {
 
     private long fromMemberId;
 
-    @Column(nullable = false)
-    private Long toMemberId;
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<NotificationRecipient> toMemberIds = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean isRead = false;
 
     @Builder
-    public Notification(Long relatedId, NotificationTarget target, Long fromMemberId, Long toMemberId) {
+    public Notification(long relatedId, NotificationTarget target, long fromMemberId) {
         this.relatedId = relatedId;
         this.target = target;
         this.fromMemberId = fromMemberId;
-        this.toMemberId = toMemberId;
+    }
+
+    public void addRecipient(Long toMemberId) {
+        NotificationRecipient recipient = NotificationRecipient.builder()
+                .notification(this)
+                .toMemberId(toMemberId)
+                .build();
+        this.toMemberIds.add(recipient);
     }
 }

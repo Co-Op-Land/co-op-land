@@ -1,5 +1,6 @@
 package com.coop.global.notification.values;
 
+import com.coop.domain.notification.entity.NotificationRecipients;
 import com.coop.domain.notification.enums.NotificationTarget;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class NotificationEvent {
     private NotificationTarget target;
     private Long fromMemberId;
-    private Long toMemberId;
+    private NotificationRecipients recipients;
     private Long relatedId;
     private String content;
 }
