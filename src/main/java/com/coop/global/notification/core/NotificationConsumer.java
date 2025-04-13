@@ -23,7 +23,6 @@ public class NotificationConsumer {
             for (Long toMemberId : event.getToMemberIds().getValues()) {
                 String redisChannel = "noti:member:" + toMemberId;
                 redisTemplate.convertAndSend(redisChannel, payload);
-                log.info("Kafka → Redis Pub/Sub 전송 완료: {}, 채널: {}", event, redisChannel);
             }
         } catch (Exception e) {
             log.error("Redis Pub/Sub 전송 실패", e);

@@ -1,15 +1,18 @@
 package com.coop.global.notification.values;
 
 import com.coop.domain.notification.entity.Notification;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
 
-@Value
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ToMemberIds {
-
-    List<Long> values;
+    private List<Long> values;
 
     public ToMemberIds(List<Long> toMemberIds, Long fromMemberId) {
         this.values = toMemberIds.stream()
@@ -19,10 +22,12 @@ public class ToMemberIds {
     }
 
     public void addTo(Notification notification) {
-        values.forEach(notification::addRecipient);
+        if (values != null) {
+            values.forEach(notification::addRecipient);
+        }
     }
 
     public boolean isEmpty() {
-        return values.isEmpty();
+        return values == null || values.isEmpty();
     }
 }
