@@ -92,7 +92,6 @@ public class JwtFilterTest {
         when(claims.getSubject()).thenReturn("1:USER");
 
         JwtSecurityProperties securityProperties = mock(JwtSecurityProperties.class);
-        JwtSecurityProperties.Token token = mock(JwtSecurityProperties.Token.class);
 
         jwtFilter = new JwtFilter(securityProperties, blackListService, jwtUtil, filterExceptionHandler);
         JwtSecurityProperties.Secret mockSecret = mock(JwtSecurityProperties.Secret.class);
