@@ -17,6 +17,7 @@ public class NotificationService {
 
     private final NotificationRecipientRepository notificationRecipientRepository;
 
+    //단건조회 + 읽음 처리
     @Transactional
     public NotificationResponse readNotification(Long memberId, Long notificationId) {
         NotificationRecipient recipient = notificationRecipientRepository
@@ -26,6 +27,7 @@ public class NotificationService {
         return NotificationResponse.from(recipient);
     }
 
+    //내 리뷰 전체 ID 내림차순 조회 + 읽음 처리 X
     public List<NotificationResponse> readAllNotifications(Long memberId) {
         List<NotificationRecipient> recipients = notificationRecipientRepository
                 .findAllByToMemberIdOrderByIdDesc(memberId);
@@ -34,6 +36,7 @@ public class NotificationService {
                 .toList();
     }
 
+    //ID List 읽음 처리
     @Transactional
     public void markAsRead(Long memberId, List<Long> notificationIds) {
         List<NotificationRecipient> recipients = notificationRecipientRepository

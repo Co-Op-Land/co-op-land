@@ -55,7 +55,7 @@ public class NotificationServiceTest {
         NotificationResponse result = notificationService.readNotification(memberId, notificationId);
 
         assertNotNull(result);
-        assertEquals(notificationId, result.notificationId()); // 혹은 NotificationResponse 안 필드 맞게 수정
+        assertEquals(notificationId, result.notificationId());
         verify(notificationRecipientRepository).findByToMemberIdAndNotificationId(memberId, notificationId);
     }
 
@@ -116,7 +116,7 @@ public class NotificationServiceTest {
     void markAsRead_일부누락_예외() {
         List<Long> ids = List.of(1L, 2L);
         NotificationRecipient mock1 = TestUtils.createEntity(NotificationRecipient.class, Map.of("id", 1L));
-        List<NotificationRecipient> mockList = List.of(mock1); // 하나만 조회됨
+        List<NotificationRecipient> mockList = List.of(mock1);
 
         when(notificationRecipientRepository.findAllByToMemberIdAndNotification_IdIn(memberId, ids))
                 .thenReturn(mockList);
