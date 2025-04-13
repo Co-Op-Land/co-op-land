@@ -15,5 +15,10 @@ public interface NotificationStrategy {
 
     void publish(NotificationEvent event);
 
-    void execute(Object[] args, Object result);
+    default void execute(Object[] args, Object result) {
+        NotificationEvent event = buildEvent(args, result);
+        if (validate(event)) return;
+        save(event);
+        publish(event);
+    }
 }

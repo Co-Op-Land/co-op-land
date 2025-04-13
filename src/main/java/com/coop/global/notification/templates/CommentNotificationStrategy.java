@@ -66,12 +66,4 @@ public class CommentNotificationStrategy implements NotificationStrategy {
     public void publish(NotificationEvent event) {
         kafkaTemplate.send("notification." + event.getTarget().name().toLowerCase(), event);
     }
-
-    @Override
-    public void execute(Object[] args, Object result) {
-        NotificationEvent event = buildEvent(args, result);
-        if (validate(event)) return;
-        save(event);
-        publish(event);
-    }
 }
