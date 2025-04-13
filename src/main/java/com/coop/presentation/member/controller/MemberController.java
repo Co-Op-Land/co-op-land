@@ -21,8 +21,8 @@ public class MemberController {
     public ResponseEntity<ApiResponse<MemberResponse>> readUser(
             @AuthenticationPrincipal User userDetails
     ) {
-        Long userId = Long.valueOf(userDetails.getUsername());
-        MemberResponse responseDto = memberService.readUser(userId);
+        Long memberId = Long.valueOf(userDetails.getUsername());
+        MemberResponse responseDto = memberService.readUser(memberId);
         return ApiResponse.success(responseDto);
     }
 
@@ -31,8 +31,8 @@ public class MemberController {
             @AuthenticationPrincipal User userDetails,
             @RequestBody UpdatePasswordRequest requestDto
     ) {
-        Long userId = Long.valueOf(userDetails.getUsername());
-        memberService.updatePassword(userId, requestDto);
+        Long memberId = Long.valueOf(userDetails.getUsername());
+        memberService.updatePassword(memberId, requestDto);
         return ApiResponse.success("비밀번호 변경 성공");
     }
 }

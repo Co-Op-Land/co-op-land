@@ -1,6 +1,5 @@
 package com.coop.domain.notification.entity;
 
-import com.coop.global.common.BaseEntity;
 import com.coop.domain.notification.enums.NotificationTarget;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -15,7 +14,7 @@ import java.util.List;
 @Table(name = "notification")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification extends BaseEntity {
+public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

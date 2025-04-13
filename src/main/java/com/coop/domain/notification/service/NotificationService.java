@@ -1,9 +1,42 @@
 package com.coop.domain.notification.service;
 
+import com.coop.domain.notification.entity.NotificationRecipient;
+import com.coop.domain.notification.repository.NotificationRecipientRepository;
+import com.coop.global.common.enums.ErrorCode;
+import com.coop.global.exception.error.NotFoundException;
+import com.coop.presentation.notification.dto.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
+
+    private final NotificationRecipientRepository notificationRecipientRepository;
+
+    @Transactional
+    public NotificationResponse readNotification(Long memberId, Long notificationId) {
+        NotificationRecipient recipient = notificationRecipientRepository
+                .findByToMemberIdAndNotificationId(memberId, notificationId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOTIFICATION_NOT_FOUND));
+        recipient.markAsRead();
+        return NotificationResponse.from(
+                recipient.getNotification().getTarget().toString(),
+                recipient.getNotification().getRelatedId()
+        );
+    }
+
+    public List<NotificationResponse> readAllNotifications(Long memberId) {
+        List<NotificationRecipient> recipients = notificationRecipientRepository
+                .findAllByToMemberIdOrderByIdDesc(memberId);
+        return recipients.stream()
+                .map(recipient -> NotificationResponse.from(
+                        recipient.getNotification().getTarget().toString(),
+                        recipient.getNotification().getRelatedId()
+                ))
+                .toList();
+    }
 }
