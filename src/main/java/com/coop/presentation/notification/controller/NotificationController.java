@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,5 +35,15 @@ public class NotificationController {
         Long memberId = Long.valueOf(userDetails.getUsername());
         List<NotificationResponse> responseDto = notificationService.readAllNotifications(memberId);
         return ApiResponse.success(responseDto);
+    }
+
+    @PostMapping("/read")
+    public ResponseEntity<ApiResponse<String>> markAsRead(
+            @RequestBody List<Long> notificationIds,
+            @AuthenticationPrincipal User userDetails
+    ) {
+        Long memberId = Long.valueOf(userDetails.getUsername());
+        notificationService.markAsRead(memberId, notificationIds);
+        return ApiResponse.success("일괄 읽음 처리 성공");
     }
 }

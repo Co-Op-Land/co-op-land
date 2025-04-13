@@ -13,4 +13,6 @@ public interface NotificationRecipientRepository extends JpaRepository<Notificat
     Optional<NotificationRecipient> findByToMemberIdAndNotificationId(Long toMemberId, Long notificationId);
 
     List<NotificationRecipient> findAllByToMemberIdOrderByIdDesc(Long toMemberId);
+
+    List<NotificationRecipient> findAllByToMemberIdAndNotification_IdIn(Long toMemberId, List<Long> notificationIds);
 }

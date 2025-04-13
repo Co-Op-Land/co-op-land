@@ -43,4 +43,15 @@ public class NotificationService {
                 ))
                 .toList();
     }
+
+    @Transactional
+    public void markAsRead(Long memberId, List<Long> notificationIds) {
+        List<NotificationRecipient> recipients = notificationRecipientRepository
+                .findAllByToMemberIdAndNotification_IdIn(memberId, notificationIds);
+
+        if (recipients.size() != notificationIds.size()) {
+            throw new NotFoundException(ErrorCode.NOTIFICATION_NOT_FOUND);
+        }
+        recipients.forEach(NotificationRecipient::markAsRead);
+    }
 }
