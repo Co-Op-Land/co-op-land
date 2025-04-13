@@ -21,7 +21,7 @@ public abstract class NotificationTemplate {
     }
 
     protected boolean validate(NotificationEvent event) {
-        return !event.getRecipients().isEmpty();
+        return !event.getToMemberIds().isEmpty();
     }
 
     protected void save(NotificationEvent event) {
@@ -31,7 +31,7 @@ public abstract class NotificationTemplate {
                 .fromMemberId(event.getFromMemberId())
                 .build();
 
-        event.getRecipients().addTo(notification);
+        event.getToMemberIds().addTo(notification);
         notificationRepository.save(notification);
     }
 

@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Objects;
 
 @Getter
-public class NotificationRecipients {
+public class ToMemberIds {
 
     private final List<Long> values;
 
-    public NotificationRecipients(List<Long> toMemberIds, Long fromMemberId) {
+    public ToMemberIds(List<Long> toMemberIds, Long fromMemberId) {
         this.values = toMemberIds.stream()
                 .filter(id -> !Objects.equals(id, fromMemberId))
                 .distinct()

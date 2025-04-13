@@ -20,7 +20,7 @@ public class NotificationConsumer {
     public void consume(NotificationEvent event) {
         try {
             String payload = objectMapper.writeValueAsString(event);
-            for (Long toMemberId : event.getRecipients().getValues()) {
+            for (Long toMemberId : event.getToMemberIds().getValues()) {
                 String redisChannel = "noti:member:" + toMemberId;
                 redisTemplate.convertAndSend(redisChannel, payload);
                 log.info("Kafka → Redis Pub/Sub 전송 완료: {}, 채널: {}", event, redisChannel);

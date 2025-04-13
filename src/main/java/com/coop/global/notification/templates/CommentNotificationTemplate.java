@@ -1,6 +1,6 @@
 package com.coop.global.notification.templates;
 
-import com.coop.domain.notification.entity.NotificationRecipients;
+import com.coop.domain.notification.entity.ToMemberIds;
 import com.coop.domain.notification.repository.NotificationRepository;
 import com.coop.domain.post.entity.Post;
 import com.coop.domain.post.repository.PostRepository;
@@ -44,7 +44,7 @@ public class CommentNotificationTemplate extends NotificationTemplate {
         return NotificationEvent.builder()
                 .target(NotificationTarget.COMMENT)
                 .fromMemberId(fromMemberId)
-                .recipients(new NotificationRecipients(List.of(toMemberId), fromMemberId))
+                .toMemberIds(new ToMemberIds(List.of(toMemberId), fromMemberId))
                 .relatedId(commentId)
                 .content("새 댓글이 달렸습니다.")
                 .build();
