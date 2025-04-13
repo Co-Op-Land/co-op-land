@@ -13,7 +13,7 @@ public record NotificationResponse(
     public static NotificationResponse from(NotificationRecipient recipient) {
         return NotificationResponse.builder()
                 .notificationId(recipient.getNotification().getId())
-                .target(recipient.getNotification().getTarget().toString())
+                .target(recipient.getNotification().getTarget().toString().toLowerCase())
                 .relatedId(recipient.getNotification().getRelatedId())
                 .isRead(recipient.isRead())
                 .build();
