@@ -1,5 +1,6 @@
 package com.coop.global.notification.templates;
 
+import com.coop.domain.notification.repository.NotificationRepository;
 import com.coop.domain.post.entity.Post;
 import com.coop.domain.post.repository.PostRepository;
 import com.coop.global.notification.values.NotificationEvent;
@@ -15,9 +16,10 @@ public class CommentNotificationTemplate extends NotificationTemplate {
 
     public CommentNotificationTemplate(
             KafkaTemplate<String, NotificationEvent> kafkaTemplate,
+            NotificationRepository notificationRepository,
             PostRepository postRepository
     ) {
-        super(kafkaTemplate);
+        super(kafkaTemplate, notificationRepository);
         this.postRepository = postRepository;
     }
 

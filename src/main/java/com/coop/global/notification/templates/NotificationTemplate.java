@@ -1,5 +1,7 @@
 package com.coop.global.notification.templates;
 
+import com.coop.domain.notification.entity.Notification;
+import com.coop.domain.notification.repository.NotificationRepository;
 import com.coop.global.notification.values.NotificationEvent;
 import com.coop.domain.notification.enums.NotificationTarget;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import java.util.Objects;
 public abstract class NotificationTemplate {
 
     private final KafkaTemplate<String, NotificationEvent> kafkaTemplate;
+    private final NotificationRepository notificationRepository;
 
     public final void execute(Object[] args, Object result, NotificationTarget target) {
         NotificationEvent event = buildEvent(args, result, target);
@@ -24,6 +27,13 @@ public abstract class NotificationTemplate {
     }
 
     protected void save(NotificationEvent event) {
+        Notification notification = Notification.builder()
+                .relatedId(event.getRelatedId())
+                .target(event.getTarget())
+                .fromMemberId(event.getFromMemberId())
+                .toMemberId(event.getToMemberId())
+                .build();
+        notificationRepository.save(notification);
     }
 
     protected void publish(NotificationEvent event) {

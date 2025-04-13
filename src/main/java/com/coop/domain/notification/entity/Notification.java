@@ -1,6 +1,5 @@
 package com.coop.domain.notification.entity;
 
-import com.coop.domain.member.entity.Member;
 import com.coop.global.common.BaseEntity;
 import com.coop.domain.notification.enums.NotificationTarget;
 import jakarta.persistence.*;
@@ -19,26 +18,24 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long related_id;
+    private long relatedId;
 
     @Enumerated(EnumType.STRING)
     private NotificationTarget target;
 
-    @ManyToOne
-    @JoinColumn(name = "from_member_id")
-    private Member fromMember;
+    private long fromMemberId;
 
-    @ManyToOne
-    @JoinColumn(name = "to_member_id")
-    private Member toMember;
+    @Column(nullable = false)
+    private Long toMemberId;
 
+    @Column(nullable = false)
     private boolean isRead = false;
 
     @Builder
-    public Notification(Long related_id, NotificationTarget target, Member fromMember, Member toMember) {
-        this.related_id = related_id;
+    public Notification(Long relatedId, NotificationTarget target, Long fromMemberId, Long toMemberId) {
+        this.relatedId = relatedId;
         this.target = target;
-        this.fromMember = fromMember;
-        this.toMember = toMember;
+        this.fromMemberId = fromMemberId;
+        this.toMemberId = toMemberId;
     }
 }
