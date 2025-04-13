@@ -2,7 +2,7 @@ package com.coop.global.notification.core;
 
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.InvalidRequestException;
-import com.coop.global.notification.templates.NotificationStrategy;
+import com.coop.global.notification.strategy.NotificationStrategy;
 import com.coop.global.notification.annotation.TriggerNotification;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;

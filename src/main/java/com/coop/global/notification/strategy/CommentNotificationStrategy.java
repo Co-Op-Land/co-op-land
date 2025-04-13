@@ -1,4 +1,4 @@
-package com.coop.global.notification.templates;
+package com.coop.global.notification.strategy;
 
 import com.coop.domain.comment.entity.Comment;
 import com.coop.domain.comment.repository.CommentRepository;

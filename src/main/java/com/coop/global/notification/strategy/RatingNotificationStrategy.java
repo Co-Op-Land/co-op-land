@@ -1,4 +1,4 @@
-package com.coop.global.notification.templates;
+package com.coop.global.notification.strategy;
 
 import com.coop.domain.notification.entity.Notification;
 import com.coop.domain.notification.enums.NotificationTarget;
