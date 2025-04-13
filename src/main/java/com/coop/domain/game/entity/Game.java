@@ -2,6 +2,7 @@ package com.coop.domain.game.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +16,15 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int maxPlayerCounts;
-
+    private Integer maxPlayerCounts;
     private String name;
+
+    @Builder
+    public Game(
+            Integer maxPlayerCounts,
+            String name
+    ) {
+        this.maxPlayerCounts = maxPlayerCounts;
+        this.name = name;
+    }
 }
