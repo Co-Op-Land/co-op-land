@@ -23,24 +23,14 @@ public class NotificationService {
                 .findByToMemberIdAndNotificationId(memberId, notificationId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOTIFICATION_NOT_FOUND));
         recipient.markAsRead();
-        return NotificationResponse.from(
-                recipient.getNotification().getId(),
-                recipient.getNotification().getTarget().toString(),
-                recipient.getNotification().getRelatedId(),
-                recipient.isRead()
-        );
+        return NotificationResponse.from(recipient);
     }
 
     public List<NotificationResponse> readAllNotifications(Long memberId) {
         List<NotificationRecipient> recipients = notificationRecipientRepository
                 .findAllByToMemberIdOrderByIdDesc(memberId);
         return recipients.stream()
-                .map(recipient -> NotificationResponse.from(
-                        recipient.getNotification().getId(),
-                        recipient.getNotification().getTarget().toString(),
-                        recipient.getNotification().getRelatedId(),
-                        recipient.isRead()
-                ))
+                .map(NotificationResponse::from)
                 .toList();
     }
 
