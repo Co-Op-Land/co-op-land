@@ -1,34 +1,42 @@
 package com.coop.global.notification.values;
 
 import com.coop.domain.notification.entity.Notification;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ToMemberIds {
 
-    private List<Long> values;
+    private final List<Long> values = new ArrayList<>();
 
-    public ToMemberIds(List<Long> toMemberIds, Long fromMemberId) {
-        this.values = toMemberIds.stream()
+    private ToMemberIds(List<Long> initial, Long fromMemberId) {
+        initial.stream()
                 .filter(id -> !Objects.equals(id, fromMemberId))
                 .distinct()
-                .toList();
+                .forEach(this::add);
     }
 
-    public void addTo(Notification notification) {
-        if (values != null) {
-            values.forEach(notification::addRecipient);
-        }
+    public static ToMemberIds of(List<Long> toMemberIds, Long fromMemberId) {
+        return new ToMemberIds(toMemberIds, fromMemberId);
     }
 
     public boolean isEmpty() {
-        return values == null || values.isEmpty();
+        return values.isEmpty();
+    }
+
+    public void addTo(Notification notification) {
+        values.forEach(notification::addRecipient);
+    }
+
+    public void add(Long memberId) {
+        if (memberId != null && !values.contains(memberId)) {
+            values.add(memberId);
+        }
     }
 }

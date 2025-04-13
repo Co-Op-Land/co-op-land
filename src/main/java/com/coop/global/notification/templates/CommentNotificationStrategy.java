@@ -1,5 +1,7 @@
 package com.coop.global.notification.templates;
 
+import com.coop.domain.comment.entity.Comment;
+import com.coop.domain.comment.repository.CommentRepository;
 import com.coop.domain.notification.entity.Notification;
 import com.coop.domain.notification.enums.NotificationTarget;
 import com.coop.domain.notification.repository.NotificationRepository;
@@ -19,6 +21,7 @@ import java.util.List;
 public class CommentNotificationStrategy implements NotificationStrategy {
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final NotificationRepository notificationRepository;
     private final KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
@@ -31,16 +34,27 @@ public class CommentNotificationStrategy implements NotificationStrategy {
     public NotificationEvent buildEvent(Object[] args, Object result) {
         Long postId = (Long) args[1];
         User userDetails = (User) args[0];
-        Post post = postRepository.findById(postId).orElseThrow();
-
-        Long toMemberId = post.getMember().getId();
-        Long fromMemberId = Long.valueOf(userDetails.getUsername());
         Long commentId = (result instanceof Long id) ? id : null;
+
+        Long fromMemberId = Long.valueOf(userDetails.getUsername());
+
+        Post post = postRepository.findById(postId).orElseThrow();
+        Long toPostWriterId = post.getMember().getId();
+
+        ToMemberIds toMemberIds = ToMemberIds.of(List.of(toPostWriterId), fromMemberId);
+
+        if (commentId != null) {
+            Comment comment = commentRepository.findById(commentId).orElseThrow();
+            if (comment.getParent() != null) {
+                Long parentWriterId = comment.getParent().getMember().getId();
+                toMemberIds.add(parentWriterId); // 중복/자기자신 자동 필터링
+            }
+        }
 
         return NotificationEvent.builder()
                 .target(NotificationTarget.COMMENT)
                 .fromMemberId(fromMemberId)
-                .toMemberIds(new ToMemberIds(List.of(toMemberId), fromMemberId))
+                .toMemberIds(toMemberIds)
                 .relatedId(commentId)
                 .build();
     }
