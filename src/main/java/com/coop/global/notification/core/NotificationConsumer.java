@@ -19,7 +19,7 @@ public class NotificationConsumer {
     /**
      * Kafka 에서 Redis Pub/Sub 으로 event 를 발송하는 메서드
      */
-    @KafkaListener(topics = "notification.comment", groupId = "notification-group")
+    @KafkaListener(topicPattern = "notification\\..*", groupId = "notification-group")
     public void consume(NotificationEvent event) {
         try {
             String payload = objectMapper.writeValueAsString(event);
