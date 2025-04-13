@@ -4,13 +4,17 @@ import lombok.Builder;
 
 @Builder
 public record NotificationResponse(
+        Long notificationId,
         String target,
-        Long relatedId
+        Long relatedId,
+        boolean isRead
 ) {
-    public static NotificationResponse from(String target, Long relatedId) {
+    public static NotificationResponse from(Long notificationId, String target, Long relatedId, boolean isRead) {
         return NotificationResponse.builder()
+                .notificationId(notificationId)
                 .target(target)
                 .relatedId(relatedId)
+                .isRead(isRead)
                 .build();
     }
 }

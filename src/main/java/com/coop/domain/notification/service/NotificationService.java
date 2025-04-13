@@ -24,8 +24,10 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOTIFICATION_NOT_FOUND));
         recipient.markAsRead();
         return NotificationResponse.from(
+                recipient.getNotification().getId(),
                 recipient.getNotification().getTarget().toString(),
-                recipient.getNotification().getRelatedId()
+                recipient.getNotification().getRelatedId(),
+                recipient.isRead()
         );
     }
 
@@ -34,8 +36,10 @@ public class NotificationService {
                 .findAllByToMemberIdOrderByIdDesc(memberId);
         return recipients.stream()
                 .map(recipient -> NotificationResponse.from(
+                        recipient.getNotification().getId(),
                         recipient.getNotification().getTarget().toString(),
-                        recipient.getNotification().getRelatedId()
+                        recipient.getNotification().getRelatedId(),
+                        recipient.isRead()
                 ))
                 .toList();
     }
