@@ -1,6 +1,5 @@
 package com.coop.global.notification.values;
 
-import com.coop.domain.notification.entity.ToMemberIds;
 import com.coop.domain.notification.enums.NotificationTarget;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

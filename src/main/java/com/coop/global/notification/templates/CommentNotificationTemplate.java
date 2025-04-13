@@ -1,6 +1,6 @@
 package com.coop.global.notification.templates;
 
-import com.coop.domain.notification.entity.ToMemberIds;
+import com.coop.global.notification.values.ToMemberIds;
 import com.coop.domain.notification.repository.NotificationRepository;
 import com.coop.domain.post.entity.Post;
 import com.coop.domain.post.repository.PostRepository;

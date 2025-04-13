@@ -1,14 +1,15 @@
-package com.coop.domain.notification.entity;
+package com.coop.global.notification.values;
 
-import lombok.Getter;
+import com.coop.domain.notification.entity.Notification;
+import lombok.Value;
 
 import java.util.List;
 import java.util.Objects;
 
-@Getter
+@Value
 public class ToMemberIds {
 
-    private final List<Long> values;
+    List<Long> values;
 
     public ToMemberIds(List<Long> toMemberIds, Long fromMemberId) {
         this.values = toMemberIds.stream()
