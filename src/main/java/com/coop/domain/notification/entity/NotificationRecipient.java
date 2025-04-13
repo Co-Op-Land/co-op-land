@@ -23,6 +23,9 @@ public class NotificationRecipient {
     @Column(nullable = false)
     private Long toMemberId;
 
+    @Column(nullable = false)
+    private boolean isRead = false;
+
     @Builder
     public NotificationRecipient(Notification notification, Long toMemberId) {
         this.notification = notification;

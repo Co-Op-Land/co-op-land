@@ -31,9 +31,6 @@ public class Notification extends BaseEntity {
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NotificationRecipient> toMemberIds = new ArrayList<>();
 
-    @Column(nullable = false)
-    private boolean isRead = false;
-
     @Builder
     public Notification(long relatedId, NotificationTarget target, long fromMemberId) {
         this.relatedId = relatedId;
