@@ -9,17 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * 수신자 List 를 편히 정의하기 위한 일급 컬렉션
+ */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ToMemberIds {
 
     private final List<Long> values = new ArrayList<>();
+    private Long fromMemberId;
 
     private ToMemberIds(List<Long> initial, Long fromMemberId) {
-        initial.stream()
-                .filter(id -> !Objects.equals(id, fromMemberId))
-                .distinct()
-                .forEach(this::add);
+        this.fromMemberId = fromMemberId;
+        initial.forEach(this::add);
     }
 
     public static ToMemberIds of(List<Long> toMemberIds, Long fromMemberId) {
@@ -30,13 +32,15 @@ public class ToMemberIds {
         return values.isEmpty();
     }
 
-    public void addTo(Notification notification) {
-        values.forEach(notification::addRecipient);
-    }
-
+    //List 에 add
     public void add(Long memberId) {
-        if (memberId != null && !values.contains(memberId)) {
+        if (memberId != null && !Objects.equals(memberId, fromMemberId) && !values.contains(memberId)) {
             values.add(memberId);
         }
+    }
+
+    //RDB 에 add
+    public void addTo(Notification notification) {
+        values.forEach(notification::addRecipient);
     }
 }

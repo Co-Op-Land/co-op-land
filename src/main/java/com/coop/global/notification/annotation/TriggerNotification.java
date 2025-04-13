@@ -1,4 +1,4 @@
-package com.coop.global.notification.values;
+package com.coop.global.notification.annotation;
 
 import com.coop.domain.notification.enums.NotificationTarget;
 

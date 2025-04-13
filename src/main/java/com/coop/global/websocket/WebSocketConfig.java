@@ -21,10 +21,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
         return new WebSocketHandler(sessionManager, jwtUtil);
     }
 
+    //TODO path 수정
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketHandler(), "/ws")
                 .setAllowedOrigins("*");
     }
-
 }

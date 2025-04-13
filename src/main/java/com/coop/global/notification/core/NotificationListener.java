@@ -12,6 +12,9 @@ public class NotificationListener implements MessageListener {
 
     private final WebSocketSessionManager sessionManager;
 
+    /**
+     * Redis Pub/Sub 에서 WebSocket 으로 알림을 전송하는 메서드
+     */
     @Override
     public void onMessage(Message message, byte[] pattern) {
         String channel = new String(message.getChannel());
@@ -21,6 +24,7 @@ public class NotificationListener implements MessageListener {
         sessionManager.sendNotificationToMember(memberId, body);
     }
 
+    //MemberId 추출
     private Long extractMemberIdFromChannel(String channel) {
         return Long.parseLong(channel.replace("noti:member:", ""));
     }

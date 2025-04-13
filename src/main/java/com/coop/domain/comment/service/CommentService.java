@@ -11,7 +11,7 @@ import com.coop.global.exception.error.AccessDeniedException;
 import com.coop.global.exception.error.InvalidRequestException;
 import com.coop.global.exception.error.NotFoundException;
 import com.coop.domain.notification.enums.NotificationTarget;
-import com.coop.global.notification.values.TriggerNotification;
+import com.coop.global.notification.annotation.TriggerNotification;
 import com.coop.presentation.comment.dto.request.CommentRequest;
 import com.coop.presentation.comment.dto.response.CommentPageResponse;
 import com.coop.presentation.comment.dto.response.MemberCommentResponse;

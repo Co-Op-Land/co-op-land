@@ -16,6 +16,9 @@ public class NotificationConsumer {
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
 
+    /**
+     * Kafka 에서 Redis Pub/Sub 으로 event 를 발송하는 메서드
+     */
     @KafkaListener(topics = "notification.comment", groupId = "notification-group")
     public void consume(NotificationEvent event) {
         try {

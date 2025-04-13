@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationEvent {
-    private NotificationTarget target;
-    private Long fromMemberId;
-    private ToMemberIds toMemberIds;
-    private Long relatedId;
+    private NotificationTarget target;  //알림 유형
+    private Long fromMemberId;  //발신자
+    private ToMemberIds toMemberIds;    //수신자
+    private Long relatedId; //연결된 pk(commentId, postId ...) TODO: 이게 필요한가.. 생각
 }
