@@ -39,7 +39,6 @@ public class LogoutTest {
 
     @Test
     void testLogout_성공케이스() {
-        String prefix = "Bearer ";
         String fullToken = "Bearer faketoken";
         String rawToken = "faketoken";
         Long userId = 1L;
