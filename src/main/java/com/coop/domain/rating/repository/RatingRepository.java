@@ -9,4 +9,5 @@ import java.util.List;
 public interface RatingRepository extends JpaRepository<Rating, Long> {
 
     List<Rating> findByToMember(Member member);
+    Boolean existsByHistoryIdAndFromMemberIdAndToMemberId(Long historyId, Long fromMemberId, Long toMemberId);
 }
