@@ -3,10 +3,10 @@ package com.coop.global.notification.strategy;
 import com.coop.domain.notification.entity.Notification;
 import com.coop.domain.notification.enums.NotificationTarget;
 import com.coop.domain.notification.repository.NotificationRepository;
-import com.coop.domain.rating.entity.Rating;
 import com.coop.global.notification.values.NotificationEvent;
 import com.coop.global.notification.values.ToMemberIds;
 import com.coop.presentation.rating.dto.request.RatingRequest;
+import com.coop.presentation.rating.dto.response.RatingResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -32,7 +32,7 @@ public class RatingNotificationStrategy implements NotificationStrategy {
     @Override
     public NotificationEvent buildEvent(Object[] args, Object result) {
         RatingRequest request = (RatingRequest) args[0];
-        Long ratingId = (result instanceof Rating r) ? r.getId() : null;
+        Long ratingId = (result instanceof RatingResponse r) ? r.id() : null;
         Long fromMemberId = (Long) args[1];
         Long toMemberId = request.toMemberId();
         ToMemberIds toMemberIds = ToMemberIds.of(List.of(toMemberId), fromMemberId);
