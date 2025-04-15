@@ -15,4 +15,5 @@ public class NotificationEvent {
     private Long fromMemberId;  //발신자
     private ToMemberIds toMemberIds;    //수신자 리스트
     private Long relatedId; //연결된 pk(commentId, postId ...)
+    private String content;
 }

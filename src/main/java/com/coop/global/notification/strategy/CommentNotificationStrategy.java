@@ -54,6 +54,7 @@ public class CommentNotificationStrategy implements NotificationStrategy {
                 .fromMemberId(fromMemberId)
                 .toMemberIds(toMemberIds)
                 .relatedId(postId)
+                .content("새로운 댓글이 달렸습니다.")
                 .build();
     }
 

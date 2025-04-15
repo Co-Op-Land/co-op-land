@@ -42,6 +42,7 @@ public class RatingNotificationStrategy implements NotificationStrategy {
                 .fromMemberId(fromMemberId)
                 .toMemberIds(toMemberIds)
                 .relatedId(ratingId)
+                .content("새로운 평가가 등록되었습니다.")
                 .build();
     }
 
