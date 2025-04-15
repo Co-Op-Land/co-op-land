@@ -1,6 +1,7 @@
 package com.coop.global.notification.core;
 
 import com.coop.global.notification.values.NotificationEvent;
+import com.coop.global.notification.values.NotificationMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,8 @@ public class NotificationConsumer {
     @KafkaListener(topicPattern = "notification\\..*", groupId = "notification-group")
     public void consume(NotificationEvent event) {
         try {
-            String payload = objectMapper.writeValueAsString(event);
+            NotificationMessage message = NotificationMessage.from(event);
+            String payload = objectMapper.writeValueAsString(message);
             for (Long toMemberId : event.toMemberIds().getValues()) {
                 String redisChannel = "noti:member:" + toMemberId;
                 redisTemplate.convertAndSend(redisChannel, payload);
