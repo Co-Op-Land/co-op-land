@@ -12,7 +12,9 @@ public interface NotificationStrategy {
     NotificationEvent buildEvent(Object[] args, Object result);
 
     //알림 예외처리: True 이면 Return
-    boolean validate(NotificationEvent event);
+    default boolean validate(NotificationEvent event){
+        return event.toMemberIds().isEmpty();
+    }
 
     //RDB 에 알림 객체 저장(실시간 알림인 경우 오버라이딩만)
     void save(NotificationEvent event);

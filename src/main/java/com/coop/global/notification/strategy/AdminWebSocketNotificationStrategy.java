@@ -42,11 +42,6 @@ public class AdminWebSocketNotificationStrategy implements NotificationStrategy 
     }
 
     @Override
-    public boolean validate(NotificationEvent event) {
-        return event.toMemberIds().isEmpty();
-    }
-
-    @Override
     public void save(NotificationEvent event) {
         //실시간 공지사항은 저장하지 않음
     }

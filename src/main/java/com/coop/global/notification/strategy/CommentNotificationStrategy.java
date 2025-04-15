@@ -60,11 +60,6 @@ public class CommentNotificationStrategy implements NotificationStrategy {
     }
 
     @Override
-    public boolean validate(NotificationEvent event) {
-        return event.toMemberIds().isEmpty();
-    }
-
-    @Override
     public void save(NotificationEvent event) {
         Notification notification = Notification.builder()
                 .relatedId(event.relatedId())
