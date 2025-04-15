@@ -8,7 +8,8 @@ public record NotificationResponse(
         Long notificationId,
         String target,
         Long relatedId,
-        boolean isRead
+        boolean isRead,
+        String content
 ) {
     public static NotificationResponse from(NotificationRecipient recipient) {
         return NotificationResponse.builder()
@@ -16,6 +17,7 @@ public record NotificationResponse(
                 .target(recipient.getNotification().getTarget().toString().toLowerCase())
                 .relatedId(recipient.getNotification().getRelatedId())
                 .isRead(recipient.isRead())
+                .content(recipient.getNotification().getContent())
                 .build();
     }
 }
