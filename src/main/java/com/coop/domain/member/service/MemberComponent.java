@@ -1,6 +1,7 @@
 package com.coop.domain.member.service;
 
 import com.coop.domain.member.entity.Member;
+import com.coop.domain.member.enums.Role;
 import com.coop.domain.member.repository.MemberRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.InvalidRequestException;
@@ -30,6 +31,10 @@ public class MemberComponent {
 
     public List<Member> getMembers(Set<Long> playerInRoom) {
         return memberRepository.findMembersByIds(playerInRoom);
+    }
+
+    public List<Long> getMemberIdsByRole(Role role) {
+        return memberRepository.findIdsByRole(role);
     }
 
     public void isExist(Long id) {

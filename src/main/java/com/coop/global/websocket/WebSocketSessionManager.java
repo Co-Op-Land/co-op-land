@@ -6,6 +6,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -55,5 +57,13 @@ public class WebSocketSessionManager {
                 log.warn("유저 {}의 웹소켓 세션이 존재하지 않음", memberId);
             }
         }
+    }
+
+    public List<Long> getConnectedUserIdList() {
+        return new ArrayList<>(sessions.keySet());
+    }
+
+    public int getOnlineUserCount() {
+        return sessions.size();
     }
 }

@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
@@ -18,23 +15,28 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @PostMapping("/rdb")
-    public ResponseEntity<ApiResponse<String>> SendRDBNotification(
+    @PostMapping("/notification/rdb")
+    public ResponseEntity<ApiResponse<AdminNotificationResponse>> SendRDBNotification(
             @RequestBody AdminNotificationRequest requestDto,
             @AuthenticationPrincipal User userDetails
     ) {
         Long memberId = Long.valueOf(userDetails.getUsername());
-        adminService.sendRDBNotification(memberId, requestDto);
-        return ApiResponse.success("일괄 알림 전송 성공");
+        AdminNotificationResponse responseDto = adminService.sendRDBNotification(memberId, requestDto);
+        return ApiResponse.success(responseDto);
     }
 
-    @PostMapping("/websocket")
-    public ResponseEntity<ApiResponse<String>> SendWebSocketNotification(
+    @PostMapping("/notification/websocket")
+    public ResponseEntity<ApiResponse<AdminNotificationResponse>> SendWebSocketNotification(
             @RequestBody AdminNotificationRequest requestDto,
             @AuthenticationPrincipal User userDetails
     ) {
         Long memberId = Long.valueOf(userDetails.getUsername());
-        adminService.sendWebSocketNotification(memberId, requestDto);
-        return ApiResponse.success("일괄 실시간 알림 전송 성공");
+        AdminNotificationResponse responseDto = adminService.sendWebSocketNotification(memberId, requestDto);
+        return ApiResponse.success(responseDto);
+    }
+
+    @GetMapping("/websocket")
+    public ResponseEntity<ApiResponse<WebSocketIdListResponse>> getConnectedUserIds(){
+        return ApiResponse.success(adminService.getConnectedUserIds());
     }
 }
