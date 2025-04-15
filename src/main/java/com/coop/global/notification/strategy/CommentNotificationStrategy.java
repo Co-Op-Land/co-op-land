@@ -49,34 +49,35 @@ public class CommentNotificationStrategy implements NotificationStrategy {
                 toMemberIds.add(parentWriterId);
             }
         }
-        return NotificationEvent.builder()
-                .target(NotificationTarget.COMMENT)
-                .fromMemberId(fromMemberId)
-                .toMemberIds(toMemberIds)
-                .relatedId(postId)
-                .content("새로운 댓글이 달렸습니다.")
-                .build();
+        return NotificationEvent.from(
+                NotificationTarget.COMMENT,
+                fromMemberId,
+                toMemberIds,
+                postId,
+                "새로운 댓글이 등록되었습니다.",
+                null
+        );
     }
 
     @Override
     public boolean validate(NotificationEvent event) {
-        return event.getToMemberIds().isEmpty();
+        return event.toMemberIds().isEmpty();
     }
 
     @Override
     public void save(NotificationEvent event) {
         Notification notification = Notification.builder()
-                .relatedId(event.getRelatedId())
-                .target(event.getTarget())
-                .fromMemberId(event.getFromMemberId())
-                .content(event.getContent())
+                .relatedId(event.relatedId())
+                .target(event.target())
+                .fromMemberId(event.fromMemberId())
+                .content(event.content())
                 .build();
-        event.getToMemberIds().addTo(notification);
+        event.toMemberIds().addTo(notification);
         notificationRepository.save(notification);
     }
 
     @Override
     public void publish(NotificationEvent event) {
-        kafkaTemplate.send("notification." + event.getTarget().name().toLowerCase(), event);
+        kafkaTemplate.send("notification." + event.target().name().toLowerCase(), event);
     }
 }

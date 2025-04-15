@@ -37,34 +37,35 @@ public class RatingNotificationStrategy implements NotificationStrategy {
         Long toMemberId = request.toMemberId();
         ToMemberIds toMemberIds = ToMemberIds.of(List.of(toMemberId), fromMemberId);
 
-        return NotificationEvent.builder()
-                .target(NotificationTarget.RATING)
-                .fromMemberId(fromMemberId)
-                .toMemberIds(toMemberIds)
-                .relatedId(ratingId)
-                .content("새로운 평가가 등록되었습니다.")
-                .build();
+        return NotificationEvent.from(
+                NotificationTarget.RATING,
+                fromMemberId,
+                toMemberIds,
+                ratingId,
+                "새로운 평점이 등록되었습니다.",
+                null
+        );
     }
 
     @Override
     public boolean validate(NotificationEvent event) {
-        return event.getToMemberIds().isEmpty();
+        return event.toMemberIds().isEmpty();
     }
 
     @Override
     public void save(NotificationEvent event) {
         Notification notification = Notification.builder()
-                .relatedId(event.getRelatedId())
-                .target(event.getTarget())
-                .fromMemberId(event.getFromMemberId())
-                .content(event.getContent())
+                .relatedId(event.relatedId())
+                .target(event.target())
+                .fromMemberId(event.fromMemberId())
+                .content(event.content())
                 .build();
-        event.getToMemberIds().addTo(notification);
+        event.toMemberIds().addTo(notification);
         notificationRepository.save(notification);
     }
 
     @Override
     public void publish(NotificationEvent event) {
-        kafkaTemplate.send("notification." + event.getTarget().name().toLowerCase(), event);
+        kafkaTemplate.send("notification." + event.target().name().toLowerCase(), event);
     }
 }

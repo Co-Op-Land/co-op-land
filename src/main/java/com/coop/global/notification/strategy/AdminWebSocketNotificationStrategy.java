@@ -31,18 +31,19 @@ public class AdminWebSocketNotificationStrategy implements NotificationStrategy 
         AdminNotificationResponse responseDto = (result instanceof AdminNotificationResponse dto) ? dto : null;
         ToMemberIds toMemberIds = ToMemberIds.of(Objects.requireNonNull(responseDto).ids(), fromMemberId);
 
-        return NotificationEvent.builder()
-                .target(NotificationTarget.WEBSOCKET)
-                .fromMemberId(fromMemberId)
-                .toMemberIds(toMemberIds)
-                .relatedId(requestDto.id())
-                .content(requestDto.content())
-                .build();
+        return NotificationEvent.from(
+                NotificationTarget.WEBSOCKET,
+                fromMemberId,
+                toMemberIds,
+                requestDto.id(),
+                requestDto.content(),
+                requestDto.endPoint()
+        );
     }
 
     @Override
     public boolean validate(NotificationEvent event) {
-        return event.getToMemberIds().isEmpty();
+        return event.toMemberIds().isEmpty();
     }
 
     @Override
@@ -51,6 +52,6 @@ public class AdminWebSocketNotificationStrategy implements NotificationStrategy 
 
     @Override
     public void publish(NotificationEvent event) {
-        kafkaTemplate.send("notification." + event.getTarget().name().toLowerCase(), event);
+        kafkaTemplate.send("notification." + event.target().name().toLowerCase(), event);
     }
 }

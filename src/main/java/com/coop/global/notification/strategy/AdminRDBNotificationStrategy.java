@@ -34,36 +34,36 @@ public class AdminRDBNotificationStrategy implements NotificationStrategy {
         Long fromMemberId = (Long) args[0];
         ToMemberIds toMemberIds = ToMemberIds.of(Objects.requireNonNull(responseDto).ids(), fromMemberId);
 
-        return NotificationEvent.builder()
-                .target(NotificationTarget.RDB)
-                .fromMemberId(fromMemberId)
-                .toMemberIds(toMemberIds)
-                .relatedId(requestDto.id())
-                .content(requestDto.content())
-                .endPoint(requestDto.endPoint())
-                .build();
+        return NotificationEvent.from(
+                NotificationTarget.RDB,
+                fromMemberId,
+                toMemberIds,
+                requestDto.id(),
+                requestDto.content(),
+                requestDto.endPoint()
+        );
     }
 
     @Override
     public boolean validate(NotificationEvent event) {
-        return event.getToMemberIds().isEmpty();
+        return event.toMemberIds().isEmpty();
     }
 
     @Override
     public void save(NotificationEvent event) {
         Notification notification = Notification.builder()
-                .relatedId(event.getRelatedId())
-                .target(event.getTarget())
-                .fromMemberId(event.getFromMemberId())
-                .content(event.getContent())
-                .endPoint(event.getEndPoint())
+                .relatedId(event.relatedId())
+                .target(event.target())
+                .fromMemberId(event.fromMemberId())
+                .content(event.content())
+                .endPoint(event.endPoint())
                 .build();
-        event.getToMemberIds().addTo(notification);
+        event.toMemberIds().addTo(notification);
         notificationRepository.save(notification);
     }
 
     @Override
     public void publish(NotificationEvent event) {
-        kafkaTemplate.send("notification." + event.getTarget().name().toLowerCase(), event);
+        kafkaTemplate.send("notification." + event.target().name().toLowerCase(), event);
     }
 }
