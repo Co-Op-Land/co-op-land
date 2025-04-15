@@ -27,11 +27,9 @@ public class NotificationConsumer {
             NotificationMessage message = NotificationMessage.from(event);
             String payload = objectMapper.writeValueAsString(message);
 
-            //현재 웹소켓 세션이 있는 유저만 필터링
-            List<Long> connectedUserIds = sessionManager.getConnectedUserIdList();
-            List<Long> toSendIds = event.toMemberIds().getValues().stream()
-                    .filter(connectedUserIds::contains)
-                    .toList();
+            List<Long> toSendIds = event.toMemberIds()
+                    .filterConnected(sessionManager.getConnectedUserIdList())
+                    .getValues();
 
             for (Long toMemberId : toSendIds) {
                 String redisChannel = "noti:member:" + toMemberId;

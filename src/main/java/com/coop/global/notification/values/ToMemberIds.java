@@ -5,9 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 수신자 List 를 편히 정의하기 위한 일급 컬렉션
@@ -43,4 +41,17 @@ public class ToMemberIds {
     public void addTo(Notification notification) {
         values.forEach(notification::addRecipient);
     }
+
+    //현재 웹소켓 세션이 있는 유저만 필터링
+    public ToMemberIds filterConnected(List<Long> connectedUserIds) {
+        Set<Long> connectedSet = new HashSet<>(connectedUserIds);
+        List<Long> filtered = this.values.stream()
+                .filter(connectedSet::contains)
+                .toList();
+        if (values.isEmpty() || connectedUserIds.isEmpty()) {
+            return ToMemberIds.of(List.of(), this.fromMemberId);
+        }
+        return ToMemberIds.of(filtered, this.fromMemberId);
+    }
+
 }
