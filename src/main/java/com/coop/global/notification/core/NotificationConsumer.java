@@ -27,7 +27,7 @@ public class NotificationConsumer {
             NotificationMessage message = NotificationMessage.from(event);
             String payload = objectMapper.writeValueAsString(message);
 
-            //현재 접속 중인 유저만 필터링
+            //현재 웹소켓 세션이 있는 유저만 필터링
             List<Long> connectedUserIds = sessionManager.getConnectedUserIdList();
             List<Long> toSendIds = event.toMemberIds().getValues().stream()
                     .filter(connectedUserIds::contains)

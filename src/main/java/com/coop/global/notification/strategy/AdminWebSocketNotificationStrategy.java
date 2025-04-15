@@ -48,6 +48,7 @@ public class AdminWebSocketNotificationStrategy implements NotificationStrategy 
 
     @Override
     public void save(NotificationEvent event) {
+        //실시간 공지사항은 저장하지 않음
     }
 
     @Override

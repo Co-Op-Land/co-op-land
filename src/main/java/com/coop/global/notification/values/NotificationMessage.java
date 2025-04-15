@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record NotificationMessage(
+public record NotificationMessage(  //websocket 발송용 메세지 객체
         NotificationTarget target,
         Long relatedId,
         String content,

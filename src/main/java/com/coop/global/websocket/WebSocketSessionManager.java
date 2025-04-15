@@ -7,7 +7,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -61,9 +60,5 @@ public class WebSocketSessionManager {
 
     public List<Long> getConnectedUserIdList() {
         return new ArrayList<>(sessions.keySet());
-    }
-
-    public int getOnlineUserCount() {
-        return sessions.size();
     }
 }

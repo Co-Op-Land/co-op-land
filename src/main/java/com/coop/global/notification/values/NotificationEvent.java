@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record NotificationEvent(
+public record NotificationEvent(    //kafka 용 이벤트 객체
         NotificationTarget target,  //알림 유형
         Long fromMemberId,  //발신자
         ToMemberIds toMemberIds,    //수신자 리스트
