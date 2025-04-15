@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(
         name = "rating",
         uniqueConstraints = {@UniqueConstraint(
-                columnNames = {"history, from_member, to_member"}
+                columnNames = {"history_id, from_member_id, to_member_id"}
         )}
 )
 public class Rating extends BaseEntity {
