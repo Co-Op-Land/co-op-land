@@ -2,6 +2,7 @@ package com.coop.presentation.admin;
 
 import com.coop.domain.admin.AdminService;
 import com.coop.global.common.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +18,7 @@ public class AdminController {
 
     @PostMapping("/notification/rdb")
     public ResponseEntity<ApiResponse<AdminNotificationResponse>> SendRDBNotification(
-            @RequestBody AdminNotificationRequest requestDto,
+            @RequestBody @Valid AdminNotificationRequest requestDto,
             @AuthenticationPrincipal User userDetails
     ) {
         Long memberId = Long.valueOf(userDetails.getUsername());
@@ -27,7 +28,7 @@ public class AdminController {
 
     @PostMapping("/notification/websocket")
     public ResponseEntity<ApiResponse<AdminNotificationResponse>> SendWebSocketNotification(
-            @RequestBody AdminNotificationRequest requestDto,
+            @RequestBody @Valid AdminNotificationRequest requestDto,
             @AuthenticationPrincipal User userDetails
     ) {
         Long memberId = Long.valueOf(userDetails.getUsername());

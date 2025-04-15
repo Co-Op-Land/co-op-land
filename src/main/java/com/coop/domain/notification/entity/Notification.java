@@ -32,12 +32,15 @@ public class Notification {
 
     private String content;
 
+    private String endPoint;
+
     @Builder
-    public Notification(long relatedId, NotificationTarget target, long fromMemberId, String content) {
+    public Notification(long relatedId, NotificationTarget target, long fromMemberId, String content, String endPoint) {
         this.relatedId = relatedId;
         this.target = target;
         this.fromMemberId = fromMemberId;
         this.content = content;
+        this.endPoint = endPoint;
     }
 
     public void addRecipient(Long toMemberId) {
