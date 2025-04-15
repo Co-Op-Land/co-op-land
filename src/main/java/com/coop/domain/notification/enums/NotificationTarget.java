@@ -1,5 +1,5 @@
 package com.coop.domain.notification.enums;
 
 public enum NotificationTarget {
-    COMMENT, RATING
+    COMMENT, RATING, RDB, WEBSOCKET
 }
