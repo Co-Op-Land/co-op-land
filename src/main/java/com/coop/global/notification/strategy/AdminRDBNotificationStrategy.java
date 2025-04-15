@@ -1,23 +1,23 @@
 package com.coop.global.notification.strategy;
 
+import com.coop.domain.member.enums.Role;
+import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.notification.entity.Notification;
 import com.coop.domain.notification.enums.NotificationTarget;
 import com.coop.domain.notification.repository.NotificationRepository;
 import com.coop.global.notification.values.NotificationEvent;
 import com.coop.global.notification.values.ToMemberIds;
 import com.coop.presentation.admin.AdminNotificationRequest;
-import com.coop.presentation.admin.AdminNotificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class AdminRDBNotificationStrategy implements NotificationStrategy {
 
     private final NotificationRepository notificationRepository;
+    private final MemberComponent memberComponent;
     private final KafkaTemplate<String, NotificationEvent> kafkaTemplate;
 
     @Override
@@ -30,9 +30,8 @@ public class AdminRDBNotificationStrategy implements NotificationStrategy {
     @Override
     public NotificationEvent buildEvent(Object[] args, Object result) {
         AdminNotificationRequest requestDto = (AdminNotificationRequest) args[1];
-        AdminNotificationResponse responseDto = (result instanceof AdminNotificationResponse dto) ? dto : null;
         Long fromMemberId = (Long) args[0];
-        ToMemberIds toMemberIds = ToMemberIds.of(Objects.requireNonNull(responseDto).ids(), fromMemberId);
+        ToMemberIds toMemberIds = ToMemberIds.of(memberComponent.getMemberIdsByRole(Role.USER), fromMemberId);
 
         return NotificationEvent.from(
                 NotificationTarget.RDB,

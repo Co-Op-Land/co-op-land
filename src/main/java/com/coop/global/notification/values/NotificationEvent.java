@@ -32,5 +32,3 @@ public record NotificationEvent(    //kafka 용 이벤트 객체
                 .build();
     }
 }
-
-//TODO: Event 객체와 실제 유저에게 전송되는 메세지 분리

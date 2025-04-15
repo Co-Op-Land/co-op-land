@@ -17,23 +17,23 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping("/notification/rdb")
-    public ResponseEntity<ApiResponse<AdminNotificationResponse>> SendRDBNotification(
+    public ResponseEntity<ApiResponse<String>> SendRDBNotification(
             @RequestBody @Valid AdminNotificationRequest requestDto,
             @AuthenticationPrincipal User userDetails
     ) {
         Long memberId = Long.valueOf(userDetails.getUsername());
-        AdminNotificationResponse responseDto = adminService.sendRDBNotification(memberId, requestDto);
-        return ApiResponse.success(responseDto);
+        adminService.sendRDBNotification(memberId, requestDto);
+        return ApiResponse.success("전체 RDB 알림 전송 성공");
     }
 
     @PostMapping("/notification/websocket")
-    public ResponseEntity<ApiResponse<AdminNotificationResponse>> SendWebSocketNotification(
+    public ResponseEntity<ApiResponse<String>> SendWebSocketNotification(
             @RequestBody @Valid AdminNotificationRequest requestDto,
             @AuthenticationPrincipal User userDetails
     ) {
         Long memberId = Long.valueOf(userDetails.getUsername());
-        AdminNotificationResponse responseDto = adminService.sendWebSocketNotification(memberId, requestDto);
-        return ApiResponse.success(responseDto);
+        adminService.sendWebSocketNotification(memberId, requestDto);
+        return ApiResponse.success("실시간 알림 전송 성공");
     }
 
     @GetMapping("/websocket")

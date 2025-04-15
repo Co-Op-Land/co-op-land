@@ -3,19 +3,18 @@ package com.coop.global.notification.strategy;
 import com.coop.domain.notification.enums.NotificationTarget;
 import com.coop.global.notification.values.NotificationEvent;
 import com.coop.global.notification.values.ToMemberIds;
+import com.coop.global.websocket.WebSocketSessionManager;
 import com.coop.presentation.admin.AdminNotificationRequest;
-import com.coop.presentation.admin.AdminNotificationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
 public class AdminWebSocketNotificationStrategy implements NotificationStrategy {
 
     private final KafkaTemplate<String, NotificationEvent> kafkaTemplate;
+    private final WebSocketSessionManager webSocketSessionManager;
 
     @Override
     public boolean supports(NotificationTarget target) {
@@ -28,8 +27,7 @@ public class AdminWebSocketNotificationStrategy implements NotificationStrategy 
     public NotificationEvent buildEvent(Object[] args, Object result) {
         AdminNotificationRequest requestDto = (AdminNotificationRequest) args[1];
         Long fromMemberId = (Long) args[0];
-        AdminNotificationResponse responseDto = (result instanceof AdminNotificationResponse dto) ? dto : null;
-        ToMemberIds toMemberIds = ToMemberIds.of(Objects.requireNonNull(responseDto).ids(), fromMemberId);
+        ToMemberIds toMemberIds = ToMemberIds.of(webSocketSessionManager.getConnectedUserIdList(), fromMemberId);
 
         return NotificationEvent.from(
                 NotificationTarget.WEBSOCKET,
