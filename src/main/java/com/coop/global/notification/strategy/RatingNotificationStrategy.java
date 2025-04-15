@@ -28,6 +28,7 @@ public class RatingNotificationStrategy implements NotificationStrategy {
     }
 
     //알림 보내는 대상: 평가 대상자
+    //relatedId: ratingId
     @Override
     public NotificationEvent buildEvent(Object[] args, Object result) {
         RatingRequest request = (RatingRequest) args[0];

@@ -31,6 +31,7 @@ public class CommentNotificationStrategy implements NotificationStrategy {
     }
 
     //알림 보내는 대상: 글 작성자, (대댓글이라면)부모 댓글 작성자
+    //relatedId: postId
     @Override
     public NotificationEvent buildEvent(Object[] args, Object result) {
         Long postId = (Long) args[1];
@@ -52,7 +53,7 @@ public class CommentNotificationStrategy implements NotificationStrategy {
                 .target(NotificationTarget.COMMENT)
                 .fromMemberId(fromMemberId)
                 .toMemberIds(toMemberIds)
-                .relatedId(commentId)
+                .relatedId(postId)
                 .build();
     }
 
