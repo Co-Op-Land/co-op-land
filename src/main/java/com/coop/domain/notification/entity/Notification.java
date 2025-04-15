@@ -30,11 +30,14 @@ public class Notification {
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<NotificationRecipient> toMemberIds = new ArrayList<>();
 
+    private String content;
+
     @Builder
-    public Notification(long relatedId, NotificationTarget target, long fromMemberId) {
+    public Notification(long relatedId, NotificationTarget target, long fromMemberId, String content) {
         this.relatedId = relatedId;
         this.target = target;
         this.fromMemberId = fromMemberId;
+        this.content = content;
     }
 
     public void addRecipient(Long toMemberId) {

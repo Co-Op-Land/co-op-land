@@ -1,7 +1,9 @@
 package com.coop.presentation.admin;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record AdminNotificationRequest(
         Long id,
-        String content
+        @NotBlank String content
 ) {
 }

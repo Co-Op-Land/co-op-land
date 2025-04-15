@@ -69,6 +69,7 @@ public class CommentNotificationStrategy implements NotificationStrategy {
                 .relatedId(event.getRelatedId())
                 .target(event.getTarget())
                 .fromMemberId(event.getFromMemberId())
+                .content(event.getContent())
                 .build();
         event.getToMemberIds().addTo(notification);
         notificationRepository.save(notification);
