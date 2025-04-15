@@ -1,10 +1,13 @@
 package com.coop.presentation.post.controller;
 
+import com.coop.domain.post.entity.Post;
+import com.coop.domain.post.enums.PostCategory;
 import com.coop.domain.post.service.PostService;
 import com.coop.global.common.ApiResponse;
 import com.coop.presentation.post.dto.request.PostRequest;
 import com.coop.presentation.post.dto.response.PostPageResponse;
 import com.coop.presentation.post.dto.response.PostResponse;
+import com.coop.presentation.post.dto.response.PostSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/posts")

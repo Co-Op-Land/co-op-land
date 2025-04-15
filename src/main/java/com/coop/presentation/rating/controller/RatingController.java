@@ -21,12 +21,12 @@ public class RatingController {
     private final RatingService ratingService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Rating>> createRating(
+    public ResponseEntity<ApiResponse<RatingResponse>> createRating(
             @AuthenticationPrincipal User userDetails,
             @RequestBody RatingRequest request
             ) {
         Long memberId = Long.valueOf(userDetails.getUsername());
-        Rating rating = ratingService.generateReview(request, memberId);
+        RatingResponse rating = ratingService.generateReview(request, memberId);
         return ApiResponse.created(rating);
     }
 

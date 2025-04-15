@@ -14,13 +14,18 @@ import com.coop.presentation.comment.dto.response.PostCommentsResponse;
 import com.coop.presentation.post.dto.request.PostRequest;
 import com.coop.presentation.post.dto.response.PostPageResponse;
 import com.coop.presentation.post.dto.response.PostResponse;
+import com.coop.presentation.post.dto.response.PostSearchResponse;
 import com.coop.presentation.post.dto.response.PostsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
