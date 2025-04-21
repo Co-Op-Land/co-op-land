@@ -1,6 +1,6 @@
 package com.coop.global.config;
 
-import com.coop.domain.member.entity.Role;
+import com.coop.domain.member.enums.Role;
 import com.coop.global.security.CustomAccessDeniedHandler;
 import com.coop.global.security.CustomAuthEntryPoint;
 import com.coop.global.security.JwtFilter;

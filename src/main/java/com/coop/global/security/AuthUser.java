@@ -1,6 +1,6 @@
 package com.coop.global.security;
 
-import com.coop.domain.member.entity.Role;
+import com.coop.domain.member.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

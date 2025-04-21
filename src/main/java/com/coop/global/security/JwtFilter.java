@@ -1,7 +1,7 @@
 package com.coop.global.security;
 
 import com.coop.domain.auth.service.BlackListService;
-import com.coop.domain.member.entity.Role;
+import com.coop.domain.member.enums.Role;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.ErrorResponseHandler;
 import io.jsonwebtoken.Claims;
@@ -113,7 +113,7 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws IOException, ServletException {
         String token = request.getParameter("token");
         if (token == null || token.isEmpty()) {
-            filterExceptionHandler.send(response, ErrorCode.TOKEN_UNAUTHORIZED);
+            errorResponseHandler.send(response, ErrorCode.TOKEN_UNAUTHORIZED);
             return;
         }
         Claims claims = jwtUtil.extractClaims(jwtUtil.substringToken(token));
