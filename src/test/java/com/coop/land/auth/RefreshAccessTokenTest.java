@@ -22,17 +22,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class RefreshAccessTokenTest {
 
-    @Mock
-    private MemberComponent memberComponent;
+    @Mock private MemberComponent memberComponent;
+    @Mock private JwtUtil jwtUtil;
+    @Mock private RefreshTokenService refreshTokenService;
 
-    @Mock
-    private JwtUtil jwtUtil;
-
-    @Mock
-    private RefreshTokenService refreshTokenService;
-
-    @InjectMocks
-    private AuthService authService;
+    @InjectMocks private AuthService authService;
 
     @Test
     void testRefreshAccessToken_액세스토큰_재발급_성공했을때() {

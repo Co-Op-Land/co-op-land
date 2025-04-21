@@ -24,20 +24,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class LoginTest {
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @Mock private PasswordEncoder passwordEncoder;
+    @Mock private MemberComponent memberComponent;
+    @Mock private JwtUtil jwtUtil;
+    @Mock private RefreshTokenService refreshTokenService;
 
-    @Mock
-    private MemberComponent memberComponent;
-
-    @Mock
-    private JwtUtil jwtUtil;
-
-    @Mock
-    private RefreshTokenService refreshTokenService;
-
-    @InjectMocks
-    private AuthService authService;
+    @InjectMocks private AuthService authService;
 
     @Test
     void testLogin_로그인_성공했을때() {

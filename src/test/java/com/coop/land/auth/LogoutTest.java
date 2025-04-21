@@ -19,17 +19,11 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class LogoutTest {
 
-    @Mock
-    private JwtUtil jwtUtil;
+    @Mock private JwtUtil jwtUtil;
+    @Mock private RefreshTokenService refreshTokenService;
+    @Mock private BlackListService blackListService;
 
-    @Mock
-    private RefreshTokenService refreshTokenService;
-
-    @Mock
-    private BlackListService blackListService;
-
-    @InjectMocks
-    private AuthService authService;
+    @InjectMocks private AuthService authService;
 
     @Test
     void testLogout_성공케이스() {
