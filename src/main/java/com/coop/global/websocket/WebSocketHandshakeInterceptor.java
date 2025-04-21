@@ -2,7 +2,9 @@ package com.coop.global.websocket;
 
 import com.coop.global.security.JwtUtil;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
@@ -16,12 +18,10 @@ import java.util.Arrays;
 import java.util.Map;
 
 @Slf4j
+@RequiredArgsConstructor
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
-    private final JwtUtil jwtUtil;
 
-    public WebSocketHandshakeInterceptor(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+    private final JwtUtil jwtUtil;
 
     @Override
     public boolean beforeHandshake(
@@ -30,22 +30,27 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
             @NonNull WebSocketHandler wsHandler,
             @NonNull Map<String, Object> attributes
     ) {
-        String query = ((ServletServerHttpRequest)request).getServletRequest().getQueryString();
-        String token = Arrays.stream(query.split("&"))
-                .filter(p -> p.startsWith("token="))
-                .map(p -> p.substring(6))
-                .findFirst()
-                .orElse(null);
-        if (token == null) {
+        try {
+            String query = ((ServletServerHttpRequest)request).getServletRequest().getQueryString();
+            String token = Arrays.stream(query.split("&"))
+                    .filter(p -> p.startsWith("token="))
+                    .map(p -> p.substring(6))
+                    .findFirst()
+                    .orElse(null);
+            if (token == null) {
+                response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                return false;
+            }
+
+            Claims claims = jwtUtil.extractClaims(token);
+            Long memberId = Long.valueOf(claims.getSubject().split(":")[0]);
+
+            attributes.put("memberId", memberId);
+            return true;
+        } catch (JwtException e) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;
         }
-
-        Claims claims = jwtUtil.extractClaims(token);
-        Long memberId = Long.valueOf(claims.getSubject().split(":")[0]);
-
-        attributes.put("memberId", memberId);
-        return true;
     }
 
     @Override
