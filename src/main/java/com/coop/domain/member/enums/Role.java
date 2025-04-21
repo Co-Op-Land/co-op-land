@@ -1,4 +1,4 @@
-package com.coop.domain.member.entity;
+package com.coop.domain.member.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

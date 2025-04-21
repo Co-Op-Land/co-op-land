@@ -1,5 +1,6 @@
 package com.coop.domain.member.entity;
 
+import com.coop.domain.member.enums.Role;
 import com.coop.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
