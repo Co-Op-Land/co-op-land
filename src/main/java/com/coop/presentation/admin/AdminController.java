@@ -1,17 +1,20 @@
 package com.coop.presentation.admin;
 
 import com.coop.domain.admin.AdminService;
+import com.coop.domain.member.enums.Role;
 import com.coop.global.common.ApiResponse;
 import com.coop.global.security.AuthUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@Secured(Role.Authority.ADMIN)
 public class AdminController {
 
     private final AdminService adminService;
