@@ -6,19 +6,25 @@ import com.coop.global.exception.error.UnAuthorizedException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class GetRefreshTokenCookieTest {
 
-    private final CookieService cookieService = new CookieService();
+    @Mock private HttpServletRequest request;
+
+    @InjectMocks private CookieService cookieService;
 
     @Test
     void getRefreshTokenCookie_성공케이스() {
         String expectedToken = "test-refresh-token";
         Cookie cookie = new Cookie("refreshToken", expectedToken);
-        HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getCookies()).thenReturn(new Cookie[]{cookie});
 
         String result = cookieService.getRefreshTokenCookie(request);
@@ -28,7 +34,6 @@ public class GetRefreshTokenCookieTest {
 
     @Test
     void getRefreshTokenCookie_쿠키없을때() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getCookies()).thenReturn(null);
 
         UnAuthorizedException exception = assertThrows(UnAuthorizedException.class,
@@ -39,7 +44,6 @@ public class GetRefreshTokenCookieTest {
     @Test
     void getRefreshTokenCookie_refreshToken없을때() {
         Cookie someOtherCookie = new Cookie("notRefreshToken", "value");
-        HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getCookies()).thenReturn(new Cookie[]{someOtherCookie});
 
         UnAuthorizedException exception = assertThrows(UnAuthorizedException.class,

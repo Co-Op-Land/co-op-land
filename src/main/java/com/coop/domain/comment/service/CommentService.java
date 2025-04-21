@@ -19,7 +19,6 @@ import com.coop.presentation.comment.dto.response.PostCommentsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +35,8 @@ public class CommentService {
 
     @Transactional
     @TriggerNotification(target = NotificationTarget.COMMENT)
-    public Long generateComment(User userDetails, Long postId, CommentRequest request) {
-        Member member = memberComponent.findMemberReference(Long.valueOf(userDetails.getUsername()));
+    public Long generateComment(Long memberId, Long postId, CommentRequest request) {
+        Member member = memberComponent.findMemberReference(memberId);
         Post post = postComponent.findById(postId);
 
         Comment comment = Optional.ofNullable(request.parentId())
@@ -68,17 +67,17 @@ public class CommentService {
     }
 
     @Transactional
-    public void modifyComment(User userDetails, Long commentId, CommentRequest request) {
+    public void modifyComment(Long memberId, Long commentId, CommentRequest request) {
         Comment comment = getCommentById(commentId);
-        validateAccess(comment, userDetails);
+        validateAccess(comment, memberId);
 
         comment.modifyContent(request.content());
     }
 
     @Transactional
-    public void removeComment(User userDetails, Long commentId) {
+    public void removeComment(Long memberId, Long commentId) {
         Comment comment = getCommentById(commentId);
-        validateAccess(comment, userDetails);
+        validateAccess(comment, memberId);
 
         commentRepository.delete(comment);
     }
@@ -99,8 +98,8 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.COMMENT_NOT_FOUND));
     }
 
-    private void validateAccess(Comment comment, User userDetails) {
-        if (!comment.getMember().getId().equals(Long.valueOf(userDetails.getUsername()))) {
+    private void validateAccess(Comment comment, Long memberId) {
+        if (!comment.getMember().getId().equals(memberId)) {
             throw new AccessDeniedException();
         }
     }

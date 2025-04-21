@@ -2,6 +2,7 @@ package com.coop.presentation.comment.controller;
 
 import com.coop.domain.comment.service.CommentService;
 import com.coop.global.common.ApiResponse;
+import com.coop.global.security.AuthUser;
 import com.coop.presentation.comment.dto.request.CommentRequest;
 import com.coop.presentation.comment.dto.response.CommentPageResponse;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,11 +22,11 @@ public class CommentController {
 
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<Long>> createComment(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long postId,
             @RequestBody CommentRequest request
     ) {
-        Long id = commentService.generateComment(userDetails, postId, request);
+        Long id = commentService.generateComment(authUser.memberId(), postId, request);
         return ApiResponse.created(id);
     }
 
@@ -52,20 +52,20 @@ public class CommentController {
 
     @PatchMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<Void>> updateComment(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long commentId,
             @RequestBody CommentRequest request
     ) {
-        commentService.modifyComment(userDetails, commentId, request);
+        commentService.modifyComment(authUser.memberId(), commentId, request);
         return ApiResponse.noContent();
     }
 
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse<Void>> deleteComment(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long commentId
     ) {
-        commentService.removeComment(userDetails, commentId);
+        commentService.removeComment(authUser.memberId(), commentId);
         return ApiResponse.noContent();
     }
 }

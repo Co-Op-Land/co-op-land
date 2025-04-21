@@ -11,7 +11,6 @@ import com.coop.global.notification.values.NotificationEvent;
 import com.coop.global.notification.values.ToMemberIds;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -35,9 +34,8 @@ public class CommentNotificationStrategy implements NotificationStrategy {
     @Override
     public NotificationEvent buildEvent(Object[] args, Object result) {
         Long postId = (Long) args[1];
-        User userDetails = (User) args[0];
         Long commentId = (result instanceof Long id) ? id : null;
-        Long fromMemberId = Long.valueOf(userDetails.getUsername());
+        Long fromMemberId = (Long) args[0];
         Post post = postRepository.findById(postId).orElseThrow();
         Long toPostWriterId = post.getMember().getId();
         ToMemberIds toMemberIds = ToMemberIds.of(List.of(toPostWriterId), fromMemberId);
