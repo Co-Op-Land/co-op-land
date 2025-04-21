@@ -1,6 +1,5 @@
 package com.coop.global.common.enums;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -15,14 +14,16 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "서버에 에러가 발생했습니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "404", "존재하지 않는 엔티티입니다."),
     ENTITY_ALREADY_EXISTS(HttpStatus.CONFLICT, "409", "이미 존재하는 엔티티입니다."),
-    ACCESS_DENIED(HttpStatus.FORBIDDEN, "403", "접근 권한이 없습니다."),
+    ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "401", "로그인이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "403", "접근 권한이 없습니다."),
     TOO_MANY_REQUEST(HttpStatus.TOO_MANY_REQUESTS, "429", "현재 요청이 많아 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
+
+    // Security
+    TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "S401", "유효한 JWT 토큰이 존재하지 않습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M404", "존재하지 않는 유저입니다."),
     ALREADY_EXIST_EMAIL(HttpStatus.BAD_REQUEST, "M400", "이미 존재하는 이메일입니다."),
-    TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "M401", "존재하지 않는 토큰입니다."),
     INVALID_EMAIL(HttpStatus.UNAUTHORIZED, "M401", "이메일이 잘못되었습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "M401", "패스워드가 잘못되었습니다."),
 

@@ -2,6 +2,7 @@ package com.coop.presentation.room.controller;
 
 import com.coop.domain.room.service.RoomService;
 import com.coop.global.common.ApiResponse;
+import com.coop.global.security.AuthUser;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateStatusRequest;
@@ -11,7 +12,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,10 +25,10 @@ public class RoomController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Long>> createRoom(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @RequestBody @Valid RoomCreateRequest request
     ) {
-        Long roomId = roomService.generateRoom(Long.valueOf(userDetails.getUsername()), request);
+        Long roomId = roomService.generateRoom(authUser.memberId(), request);
 
         return ApiResponse.created(roomId);
     }
@@ -47,42 +47,42 @@ public class RoomController {
 
     @PatchMapping("/{roomId}")
     public ResponseEntity<ApiResponse<Void>> updateRoom(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long roomId,
             @RequestBody @Valid RoomUpdateRequest request
     ) {
-        roomService.modifyRoom(Long.valueOf(userDetails.getUsername()), roomId, request);
+        roomService.modifyRoom(authUser.memberId(), roomId, request);
 
         return ApiResponse.noContent();
     }
 
     @PatchMapping("/{roomId}/status")
     public ResponseEntity<ApiResponse<Void>> updateRoomStatus(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long roomId,
             @RequestBody @Valid RoomUpdateStatusRequest request
     ) {
-        roomService.modifyRoomStatus(Long.valueOf(userDetails.getUsername()), roomId, request);
+        roomService.modifyRoomStatus(authUser.memberId(), roomId, request);
 
         return ApiResponse.noContent();
     }
 
     @PostMapping("/{roomId}")
     public ResponseEntity<ApiResponse<Long>> joinRoom(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long roomId
     ) {
-        roomService.joinRoom(Long.valueOf(userDetails.getUsername()), roomId);
+        roomService.joinRoom(authUser.memberId(), roomId);
 
         return ApiResponse.created(roomId);
     }
 
     @DeleteMapping("/{roomId}")
     public ResponseEntity<ApiResponse<Void>> leaveRoom(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long roomId
     ) {
-        roomService.leaveRoom(Long.valueOf(userDetails.getUsername()), roomId);
+        roomService.leaveRoom(authUser.memberId(), roomId);
 
         return ApiResponse.noContent();
     }

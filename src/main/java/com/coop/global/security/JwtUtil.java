@@ -92,6 +92,13 @@ public class JwtUtil {
     }
 
     /**
+     * 토큰 Prefix 제거
+     */
+    public String removePrefix(String token) {
+        return token.substring(securityProperties.token().prefix().length()).trim();
+    }
+
+    /**
      * JWT 를 생성하는 내부 메서드
      */
     private String generateJwt(String payload, String prefix, long expiration) {

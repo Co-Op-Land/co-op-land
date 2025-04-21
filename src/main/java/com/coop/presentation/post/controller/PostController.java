@@ -1,23 +1,18 @@
 package com.coop.presentation.post.controller;
 
-import com.coop.domain.post.entity.Post;
-import com.coop.domain.post.enums.PostCategory;
 import com.coop.domain.post.service.PostService;
 import com.coop.global.common.ApiResponse;
+import com.coop.global.security.AuthUser;
 import com.coop.presentation.post.dto.request.PostRequest;
 import com.coop.presentation.post.dto.response.PostPageResponse;
 import com.coop.presentation.post.dto.response.PostResponse;
-import com.coop.presentation.post.dto.response.PostSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -28,10 +23,10 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Long>> createPost(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @RequestBody PostRequest request
     ) {
-        Long id = postService.generatePost(userDetails, request);
+        Long id = postService.generatePost(authUser.memberId(), request);
         return ApiResponse.created(id);
     }
 
@@ -57,20 +52,20 @@ public class PostController {
 
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> updatePost(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long postId,
             @RequestBody PostRequest request
     ) {
-        postService.modifyPost(userDetails, postId, request);
+        postService.modifyPost(authUser.memberId(), postId, request);
         return ApiResponse.noContent();
     }
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> deleteComment(
-            @AuthenticationPrincipal User userDetails,
+            @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long postId
     ) {
-        postService.removePost(userDetails, postId);
+        postService.removePost(authUser.memberId(), postId);
         return ApiResponse.noContent();
     }
 }
