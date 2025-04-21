@@ -19,7 +19,8 @@ public enum ErrorCode {
     TOO_MANY_REQUEST(HttpStatus.TOO_MANY_REQUESTS, "429", "현재 요청이 많아 처리할 수 없습니다. 잠시 후 다시 시도해주세요."),
 
     // Security
-    TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "S401", "유효한 JWT 토큰이 존재하지 않습니다."),
+    TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "ST401", "유효한 JWT 토큰이 존재하지 않습니다."),
+    WEBSOCKET_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "SW401", "WEBSOCKET 연결에 실패하였습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M404", "존재하지 않는 유저입니다."),

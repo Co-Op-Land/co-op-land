@@ -5,6 +5,7 @@ import com.coop.global.security.CustomAccessDeniedHandler;
 import com.coop.global.security.CustomAuthEntryPoint;
 import com.coop.global.security.JwtFilter;
 import com.coop.global.security.JwtSecurityProperties;
+import com.coop.global.websocket.WebSocketFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final WebSocketFilter webSocketFilter;
     private final JwtSecurityProperties jwtSecurityProperties;
     private final CustomAuthEntryPoint customAuthEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -36,6 +38,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) //csrf 비활성화
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 사용 안함
+                .addFilterBefore(webSocketFilter, SecurityContextHolderAwareRequestFilter.class)
                 .addFilterAt(jwtFilter, SecurityContextHolderAwareRequestFilter.class)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)

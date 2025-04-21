@@ -21,6 +21,9 @@ public class ErrorResponseHandler {
 
     private void send(HttpServletResponse response, ErrorResponse error) throws IOException {
         response.setStatus(response.getStatus());
+        if (error.code().equals("SW401")) { //웹소켓에러
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 

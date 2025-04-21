@@ -17,6 +17,9 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * 웹소켓 핸드쉐이킹 -> 연결
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
@@ -37,10 +40,6 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
                     .map(p -> p.substring(6))
                     .findFirst()
                     .orElse(null);
-            if (token == null) {
-                response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                return false;
-            }
 
             Claims claims = jwtUtil.extractClaims(token);
             Long memberId = Long.valueOf(claims.getSubject().split(":")[0]);
