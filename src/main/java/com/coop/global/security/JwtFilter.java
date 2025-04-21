@@ -1,13 +1,14 @@
 package com.coop.global.security;
 
 import com.coop.domain.auth.service.BlackListService;
-import com.coop.domain.member.entity.Role;
+import com.coop.domain.member.enums.Role;
 import com.coop.global.exception.FilterExceptionHandler;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException {
+            throws IOException, ServletException {
+
+        if (request.getRequestURI().startsWith("/ws")) {
+            processWebSocketAuthentication(request, response, chain);
+            return;
+        }
 
         String bearerJwt = request.getHeader("Authorization");
 
@@ -65,9 +71,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 filterExceptionHandler.sendErrorResponse(response, HttpStatus.BAD_REQUEST, "잘못된 JWT 토큰입니다.");
                 return;
             }
-            String[] decryptedData = claims.getSubject().split(":");
-            String userId = String.valueOf(decryptedData[0]);
-            Role role = decryptedData.length > 1 ? Role.valueOf(decryptedData[1]) : null;
+            String[] data = claims.getSubject().split(":");
+            String userId = String.valueOf(data[0]);
+            Role role = data.length > 1 ? Role.valueOf(data[1]) : null;
 
             User userDetails = new User(userId, "", role != null ? role.getAuthorities() : null);
             UsernamePasswordAuthenticationToken authentication =
@@ -93,5 +99,21 @@ public class JwtFilter extends OncePerRequestFilter {
             log.error("예상치 못한 예외 발생", e);
             filterExceptionHandler.sendErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
         }
+    }
+
+    private void processWebSocketAuthentication(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain chain
+    ) throws IOException, ServletException {
+        String token = request.getParameter("token");
+        if (token == null || token.isEmpty()) {
+            filterExceptionHandler.sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "웹소켓 토큰을 찾을 수 없습니다.");
+            return;
+        }
+        Claims claims = jwtUtil.extractClaims(jwtUtil.substringToken(token));
+        String[] data = claims.getSubject().split(":");
+        request.setAttribute("memberId", Long.parseLong(String.valueOf(data[0])));
+        chain.doFilter(request, response);
     }
 }

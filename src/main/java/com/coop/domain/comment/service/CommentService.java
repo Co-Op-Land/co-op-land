@@ -10,6 +10,8 @@ import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.AccessDeniedException;
 import com.coop.global.exception.error.InvalidRequestException;
 import com.coop.global.exception.error.NotFoundException;
+import com.coop.domain.notification.enums.NotificationTarget;
+import com.coop.global.notification.annotation.TriggerNotification;
 import com.coop.presentation.comment.dto.request.CommentRequest;
 import com.coop.presentation.comment.dto.response.CommentPageResponse;
 import com.coop.presentation.comment.dto.response.MemberCommentResponse;
@@ -33,6 +35,7 @@ public class CommentService {
     private final PostComponent postComponent;
 
     @Transactional
+    @TriggerNotification(target = NotificationTarget.COMMENT)
     public Long generateComment(User userDetails, Long postId, CommentRequest request) {
         Member member = memberComponent.findMemberReference(Long.valueOf(userDetails.getUsername()));
         Post post = postComponent.findById(postId);

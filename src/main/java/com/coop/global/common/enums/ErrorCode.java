@@ -47,7 +47,11 @@ public enum ErrorCode {
     HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "H404", "존재하지 않는 방입니다."),
 
     //Rating
-    RATING_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "Rt400", "이미 존재하는 평점입니다.")
+    RATING_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "Rt400", "이미 존재하는 평점입니다."),
+
+    //Notification
+    INVALID_NOTIFICATION_TYPE(HttpStatus.BAD_REQUEST, "N400", "존재하지 않는 알림 타입입니다."),
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "M404", "존재하지 않는 알림입니다."),
     ;
     private final HttpStatus status;
     private final String code;
