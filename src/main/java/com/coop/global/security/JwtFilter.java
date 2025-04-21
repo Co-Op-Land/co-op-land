@@ -47,11 +47,6 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain chain
     ) throws IOException, ServletException {
-        if (request.getRequestURI().startsWith("/ws")) {
-            processWebSocketAuthentication(request, response, chain);
-            return;
-        }
-
         String bearerJwt = request.getHeader("Authorization");
 
         if (bearerJwt != null && bearerJwt.startsWith(jwtSecurityProperties.token().prefix())) {
@@ -101,24 +96,5 @@ public class JwtFilter extends OncePerRequestFilter {
         AuthUser authUser = AuthUser.of(memberId, userRole);
         JwtAuthenticationToken authenticationToken = new JwtAuthenticationToken(authUser, token);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-    }
-
-    /**
-     * WebSocket 인증
-     */
-    private void processWebSocketAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain chain
-    ) throws IOException, ServletException {
-        String token = request.getParameter("token");
-        if (token == null || token.isEmpty()) {
-            errorResponseHandler.send(response, ErrorCode.TOKEN_UNAUTHORIZED);
-            return;
-        }
-        Claims claims = jwtUtil.extractClaims(jwtUtil.substringToken(token));
-        String[] data = claims.getSubject().split(":");
-        request.setAttribute("memberId", Long.parseLong(String.valueOf(data[0])));
-        chain.doFilter(request, response);
     }
 }
