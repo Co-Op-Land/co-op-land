@@ -84,6 +84,9 @@ public class JwtUtil {
      * JWT 를 파싱하여 Claims(토큰의 본문) 추출
      */
     public Claims extractClaims(String token) {
+        if (token == null) {
+            throw new IllegalArgumentException("Token 을 찾을 수 없습니다.");
+        }
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

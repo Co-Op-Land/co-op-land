@@ -46,8 +46,9 @@ public class LoginTest {
         Member member = mock(Member.class);
         when(memberComponent.findByEmail(dto.email())).thenReturn(member);
         when(passwordEncoder.matches(dto.password(), member.getPassword())).thenReturn(true);
-        when(jwtUtil.createToken(anyLong(), any())).thenReturn("accessToken");
+        when(jwtUtil.createToken(anyLong(), any())).thenReturn("rawAccessToken");
         when(jwtUtil.createRefreshToken(anyLong())).thenReturn("refreshToken");
+        when(jwtUtil.removePrefix(anyString())).thenReturn("accessToken");
         doNothing().when(refreshTokenService).createRefreshToken(anyLong(), anyString());
 
         //when
