@@ -6,8 +6,8 @@ import com.coop.global.websocket.WebSocketSessionManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,8 +17,8 @@ import java.util.List;
 @Component
 public class NotificationConsumer {
 
-    private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
+    private final SimpMessagingTemplate messagingTemplate;
     private final WebSocketSessionManager sessionManager;
 
     @KafkaListener(topicPattern = "notification\\..*", groupId = "notification-group")
@@ -32,13 +32,12 @@ public class NotificationConsumer {
                     .getValues();
 
             for (Long toMemberId : toSendIds) {
-                String redisChannel = "noti:member:" + toMemberId;
-                redisTemplate.convertAndSend(redisChannel, payload);
+                String destination = "/topic/notifications/" + toMemberId;
+                messagingTemplate.convertAndSend(destination, payload);
             }
 
         } catch (Exception e) {
-            log.error("Redis Pub/Sub 전송 실패", e);
+            log.error("STOMP WebSocket 전송 실패", e);
         }
     }
 }
-
