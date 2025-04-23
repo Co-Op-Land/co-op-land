@@ -2,12 +2,15 @@ package com.coop.domain.rating.service;
 
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
+import com.coop.domain.notification.enums.NotificationTarget;
 import com.coop.domain.playHistory.entity.History;
 import com.coop.domain.playHistory.service.HistoryComponent;
 import com.coop.domain.rating.entity.Rating;
 import com.coop.domain.rating.repository.RatingRepository;
 import com.coop.global.common.enums.ErrorCode;
+import com.coop.global.exception.error.EntityAlreadyExistException;
 import com.coop.global.exception.error.NotFoundException;
+import com.coop.global.notification.annotation.TriggerNotification;
 import com.coop.presentation.rating.dto.request.RatingRequest;
 import com.coop.presentation.rating.dto.response.RatingResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +31,12 @@ public class RatingService {
     private final HistoryComponent historyComponent;
 
     @Transactional
-    public Rating generateReview(RatingRequest request, Long memberId) {
+    @TriggerNotification(target = NotificationTarget.RATING)
+    public RatingResponse generateReview(RatingRequest request, Long memberId) {
         Set<Long> memberIds = new HashSet<>(Arrays.asList(memberId, request.toMemberId()));
 
         List<Member> members = memberComponent.getMembers(memberIds);
+        checkRatingDuplicated(request, memberId);
         Member fromMember = getMember(memberId, members);
         Member toMember = getMember(request.toMemberId(), members);
 
@@ -39,7 +44,20 @@ public class RatingService {
 
         Rating rating = request.toEntity(fromMember, history, toMember);
         toMember.updateRating(findRatingAverage(toMember.getId()));
-        return ratingRepository.save(rating);
+        Rating savedRating = ratingRepository.save(rating);
+        return RatingResponse.from(savedRating);
+    }
+
+    private void checkRatingDuplicated(RatingRequest request, Long memberId) {
+        boolean exists = ratingRepository.existsByHistoryIdAndFromMemberIdAndToMemberId(
+                request.historyId(),
+                memberId,
+                request.toMemberId()
+        );
+
+        if (exists) {
+            throw new EntityAlreadyExistException(ErrorCode.RATING_ALREADY_EXIST);
+        }
     }
 
     private static Member getMember(Long memberId, List<Member> members) {

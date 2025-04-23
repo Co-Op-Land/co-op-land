@@ -18,7 +18,6 @@ import com.coop.presentation.post.dto.response.PostsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +31,8 @@ public class PostService {
     private final CommentService commentService;
 
     @Transactional
-    public Long generatePost(UserDetails userDetails, PostRequest request) {
-        Member member = memberComponent.findMemberReference(Long.valueOf(userDetails.getUsername()));
+    public Long generatePost(Long memberId, PostRequest request) {
+        Member member = memberComponent.findMemberReference(memberId);
         postRepository.save(request.of(member));
 
         return member.getId();
@@ -56,17 +55,17 @@ public class PostService {
     }
 
     @Transactional
-    public void modifyPost(UserDetails userDetails, Long postId, PostRequest request) {
+    public void modifyPost(Long memberId, Long postId, PostRequest request) {
         Post post = getPostById(postId);
-        validateAccess(post, userDetails);
+        validateAccess(post, memberId);
 
         post.modify(request.title(), request.content(), PostCategory.of(request.category()));
     }
 
     @Transactional
-    public void removePost(UserDetails userDetails, Long postId) {
+    public void removePost(Long memberId, Long postId) {
         Post post = getPostById(postId);
-        validateAccess(post, userDetails);
+        validateAccess(post, memberId);
 
         postRepository.delete(post);
     }
@@ -76,8 +75,8 @@ public class PostService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
-    private void validateAccess(Post post, UserDetails userDetails) {
-        if (!post.getMember().getId().equals(Long.valueOf(userDetails.getUsername()))) {
+    private void validateAccess(Post post, Long memberId) {
+        if (!post.getMember().getId().equals(memberId)) {
             throw new AccessDeniedException();
         }
     }

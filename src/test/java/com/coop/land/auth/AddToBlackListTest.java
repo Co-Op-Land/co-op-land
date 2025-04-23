@@ -25,23 +25,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class AddToBlackListTest {
 
-    @Mock
-    private RedisTemplate<String, String> redisTemplate;
-
-    @Mock
-    private JwtSecurityProperties jwtSecurityProperties;
-
-    @Mock
-    private JwtSecurityProperties.Token tokenProps;
-
-    @Mock
-    private JwtUtil jwtUtil;
-
-    @Mock
-    private Claims claims;
-
-    @Mock
-    private ValueOperations<String, String> valueOps;
+    @Mock private RedisTemplate<String, String> redisTemplate;
+    @Mock private JwtSecurityProperties jwtSecurityProperties;
+    @Mock private JwtSecurityProperties.Token tokenProps;
+    @Mock private JwtUtil jwtUtil;
+    @Mock private Claims claims;
+    @Mock private ValueOperations<String, String> valueOps;
 
     @InjectMocks
     private BlackListService blackListService;

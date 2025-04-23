@@ -6,7 +6,6 @@ import com.coop.domain.member.service.MemberComponent;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.InvalidRequestException;
 import com.coop.global.exception.error.UnAuthorizedException;
-import com.coop.global.security.JwtSecurityProperties;
 import com.coop.global.security.JwtUtil;
 import com.coop.presentation.auth.dto.request.LoginRequest;
 import com.coop.presentation.auth.dto.request.SignupRequest;
@@ -16,7 +15,6 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +24,6 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final JwtSecurityProperties jwtSecurityProperties;
     private final RefreshTokenService refreshTokenService;
     private final BlackListService blackListService;
 
@@ -52,22 +49,17 @@ public class AuthService {
         if (!passwordEncoder.matches(dto.password(), member.getPassword())) {
             throw new InvalidRequestException(ErrorCode.INVALID_PASSWORD);
         }
-        String accessToken = jwtUtil.createToken(member.getId(), member.getRole());
+        String rawAccessToken = jwtUtil.createToken(member.getId(), member.getRole());
         String refreshToken = jwtUtil.createRefreshToken(member.getId());
-
         refreshTokenService.createRefreshToken(member.getId(), refreshToken);
+        String accessToken = jwtUtil.removePrefix(rawAccessToken);
         return LoginResponse.from(accessToken, refreshToken);
     }
 
     /**
      * 로그아웃: Redis 의 블랙리스트에 AccessToken 을 등록
      */
-    public void logout(String authHeader) {
-        String prefix = jwtSecurityProperties.token().prefix();
-        if (!StringUtils.hasText(authHeader) || !authHeader.startsWith(prefix)) {
-            throw new UnAuthorizedException(ErrorCode.TOKEN_UNAUTHORIZED);
-        }
-        String token = jwtUtil.substringToken(authHeader);
+    public void logout(String token) {
         Claims claims = jwtUtil.extractClaims(token);
         long expirationMillis = claims.getExpiration().getTime() - System.currentTimeMillis();
         if (expirationMillis > 0) {
@@ -83,12 +75,7 @@ public class AuthService {
      */
     public RefreshAccessTokenResponse refreshAccessToken(String refreshToken) {
         refreshToken = jwtUtil.substringToken(refreshToken);
-        Claims claims;
-        try {
-            claims = jwtUtil.extractClaims(refreshToken);
-        } catch (Exception e) {
-            throw new UnAuthorizedException(ErrorCode.TOKEN_UNAUTHORIZED);
-        }
+        Claims claims = jwtUtil.extractClaims(refreshToken);
         Long memberId = Long.parseLong(claims.getSubject());
         String storedRefreshToken = refreshTokenService.getRefreshToken(memberId);
 
@@ -99,7 +86,9 @@ public class AuthService {
         refreshTokenService.createRefreshToken(memberId, newRefreshToken);
 
         Member member = memberComponent.findById(memberId);
-        String newAccessToken = jwtUtil.createToken(memberId, member.getRole());
+        String rawNewAccessToken = jwtUtil.createToken(memberId, member.getRole());
+
+        String newAccessToken = jwtUtil.removePrefix(rawNewAccessToken);
         return RefreshAccessTokenResponse.from(newAccessToken, newRefreshToken);
     }
 }

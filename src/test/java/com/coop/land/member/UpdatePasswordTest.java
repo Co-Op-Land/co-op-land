@@ -21,14 +21,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class UpdatePasswordTest {
 
-    @InjectMocks
-    private MemberService memberService;
+    @Mock private MemberComponent memberComponent;
+    @Mock private PasswordEncoder passwordEncoder;
 
-    @Mock
-    private MemberComponent memberComponent;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @InjectMocks private MemberService memberService;
 
     private final Long userId = 1L;
     private final String oldPassword = "oldPassword123";

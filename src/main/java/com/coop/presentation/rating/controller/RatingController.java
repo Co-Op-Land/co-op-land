@@ -1,14 +1,13 @@
 package com.coop.presentation.rating.controller;
 
-import com.coop.domain.rating.entity.Rating;
 import com.coop.domain.rating.service.RatingService;
 import com.coop.global.common.ApiResponse;
+import com.coop.global.security.AuthUser;
 import com.coop.presentation.rating.dto.request.RatingRequest;
 import com.coop.presentation.rating.dto.response.RatingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +20,11 @@ public class RatingController {
     private final RatingService ratingService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Rating>> createRating(
-            @AuthenticationPrincipal User userDetails,
+    public ResponseEntity<ApiResponse<RatingResponse>> createRating(
+            @AuthenticationPrincipal AuthUser authUser,
             @RequestBody RatingRequest request
             ) {
-        Long memberId = Long.valueOf(userDetails.getUsername());
-        Rating rating = ratingService.generateReview(request, memberId);
+        RatingResponse rating = ratingService.generateReview(request, authUser.memberId());
         return ApiResponse.created(rating);
     }
 

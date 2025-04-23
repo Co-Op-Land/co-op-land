@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -43,10 +45,10 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(
-            @RequestHeader("Authorization") String authHeader,
             HttpServletResponse response
     ) {
-        authService.logout(authHeader);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        authService.logout(authentication.getCredentials().toString());
         cookieService.removeRefreshTokenCookie(response);
         return ApiResponse.success("로그아웃 성공");
     }
