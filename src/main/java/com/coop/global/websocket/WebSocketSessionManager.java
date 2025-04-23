@@ -1,6 +1,5 @@
 package com.coop.global.websocket;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@Slf4j
 @Component
 public class WebSocketSessionManager {
 
@@ -20,7 +18,6 @@ public class WebSocketSessionManager {
                 .computeIfAbsent(memberId, k -> new CopyOnWriteArraySet<>())
                 .add(sessionId);
         sessionToMember.put(sessionId, memberId);
-        log.info("add session {} to member {}", sessionId, memberId);
     }
 
     public void removeSession(String sessionId) {

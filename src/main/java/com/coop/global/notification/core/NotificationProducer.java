@@ -5,7 +5,6 @@ import com.coop.global.exception.error.InvalidRequestException;
 import com.coop.global.notification.strategy.NotificationStrategy;
 import com.coop.global.notification.annotation.TriggerNotification;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
@@ -30,7 +28,6 @@ public class NotificationProducer {
     public Object notify(ProceedingJoinPoint joinPoint, TriggerNotification triggerNotification) throws Throwable {
         Object result = joinPoint.proceed();
         Object[] args = joinPoint.getArgs();
-        log.info(triggerNotification.target().toString());
         NotificationStrategy strategy = strategies.stream()
                 .filter(s -> s.supports(triggerNotification.target()))
                 .findFirst()

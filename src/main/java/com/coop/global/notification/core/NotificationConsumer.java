@@ -4,14 +4,12 @@ import com.coop.global.notification.values.NotificationEvent;
 import com.coop.global.notification.values.NotificationMessage;
 import com.coop.global.websocket.WebSocketSessionManager;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Slf4j
 @RequiredArgsConstructor
 @Component
 public class NotificationConsumer {
@@ -25,11 +23,8 @@ public class NotificationConsumer {
 
         List<Long> connectedIds = sessionManager.getConnectedUserIdList();
         event.toMemberIds().filterConnected(connectedIds)
-                .getValues().forEach(id -> {
-                    messagingTemplate.convertAndSendToUser(
-                            String.valueOf(id), "/queue/notifications", message);
-                    log.info("알림 전송: 사용자 {} → {}", id, message);
-                });
+                .getValues().forEach(id -> messagingTemplate.convertAndSendToUser(
+                        String.valueOf(id), "/queue/notifications", message));
     }
 }
 
