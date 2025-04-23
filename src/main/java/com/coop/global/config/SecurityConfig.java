@@ -20,6 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableMethodSecurity
@@ -27,6 +28,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
     private final WebSocketFilter webSocketFilter;
     private final JwtSecurityProperties jwtSecurityProperties;
     private final CustomAuthEntryPoint customAuthEntryPoint;
@@ -35,6 +37,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable) //csrf 비활성화
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 사용 안함
@@ -46,11 +49,11 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .rememberMe(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
-                                .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.from("1; mode=block"))) //XSS 공격 방지
-                                .contentTypeOptions(HeadersConfigurer.ContentTypeOptionsConfig::disable) //MIME 스니핑 방지
-                                .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin) //ClickJacking 방지
-                                .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) //Referrer 비활성화
-                                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' 'nonce-randomValue'"))//XSS 방지
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                        .xssProtection(xss -> xss.headerValue(XXssProtectionHeaderWriter.HeaderValue.from("1; mode=block"))) //XSS 공격 방지
+                        .contentTypeOptions(HeadersConfigurer.ContentTypeOptionsConfig::disable) //MIME 스니핑 방지
+                        .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)) //Referrer 비활성화
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; script-src 'self' 'nonce-randomValue'"))//XSS 방지
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(jwtSecurityProperties.secret().whiteList().toArray(new String[0])).permitAll()

@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
@@ -22,7 +21,6 @@ import java.util.Map;
  * 웹소켓 핸드쉐이킹 -> 연결
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 
@@ -42,11 +40,12 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
                     .map(p -> p.substring(6))
                     .findFirst()
                     .orElse(null);
-
+            System.out.println("Handshake Headers: " + request.getHeaders());
             Claims claims = jwtUtil.extractClaims(token);
             Long memberId = Long.valueOf(claims.getSubject().split(":")[0]);
 
             attributes.put("memberId", memberId);
+
             return true;
         } catch (JwtException e) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);

@@ -3,7 +3,6 @@ package com.coop.global.notification.core;
 import com.coop.global.notification.values.NotificationEvent;
 import com.coop.global.notification.values.NotificationMessage;
 import com.coop.global.websocket.WebSocketSessionManager;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -17,27 +16,20 @@ import java.util.List;
 @Component
 public class NotificationConsumer {
 
-    private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate messagingTemplate;
     private final WebSocketSessionManager sessionManager;
 
     @KafkaListener(topicPattern = "notification\\..*", groupId = "notification-group")
     public void consume(NotificationEvent event) {
-        try {
-            NotificationMessage message = NotificationMessage.from(event);
-            String payload = objectMapper.writeValueAsString(message);
+        NotificationMessage message = NotificationMessage.from(event);
 
-            List<Long> toSendIds = event.toMemberIds()
-                    .filterConnected(sessionManager.getConnectedUserIdList())
-                    .getValues();
-
-            for (Long toMemberId : toSendIds) {
-                String destination = "/topic/notifications/" + toMemberId;
-                messagingTemplate.convertAndSend(destination, payload);
-            }
-
-        } catch (Exception e) {
-            log.error("STOMP WebSocket 전송 실패", e);
-        }
+        List<Long> connectedIds = sessionManager.getConnectedUserIdList();
+        event.toMemberIds().filterConnected(connectedIds)
+                .getValues().forEach(id -> {
+                    messagingTemplate.convertAndSendToUser(
+                            String.valueOf(id), "/queue/notifications", message);
+                    log.info("알림 전송: 사용자 {} → {}", id, message);
+                });
     }
 }
+

@@ -6,9 +6,11 @@ import com.coop.global.notification.values.ToMemberIds;
 import com.coop.global.websocket.WebSocketSessionManager;
 import com.coop.presentation.admin.AdminNotificationRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AdminWebSocketNotificationStrategy implements NotificationStrategy {
