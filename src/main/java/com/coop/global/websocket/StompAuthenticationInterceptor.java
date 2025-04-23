@@ -23,7 +23,6 @@ public class StompAuthenticationInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        System.out.println("STOMP Headers: " + Objects.requireNonNull(accessor).toMap());
         if (accessor == null) {
             return message;
         }

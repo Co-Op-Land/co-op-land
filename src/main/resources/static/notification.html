@@ -1,37 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>STOMP WebSocket 테스트</title>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <meta charset="UTF-8" />
+    <title>개인 알림 테스트</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs/lib/stomp.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 1rem; }
+        input, button { padding: .5rem; margin-right: .5rem; }
+        ul { margin-top: 1rem; }
+    </style>
 </head>
 <body>
-<h2>STOMP WebSocket 연결 테스트</h2>
+<h1>알림 구독 페이지</h1>
 
-<label for="tokenInput">토큰 입력:</label>
-<input type="text" id="tokenInput" style="width: 500px;" placeholder="여기에 JWT 토큰을 입력하세요" />
-<button onclick="connect()">Connect</button>
+<div>
+    <input id="tokenInput" type="text" size="60"
+           placeholder="로그인 후 발급받은 JWT 토큰을 여기에 붙여넣으세요" />
+    <button id="connectBtn">로그인 &amp; 연결</button>
+</div>
+
+<ul id="notifications"></ul>
 
 <script>
-    function connect() {
-        const token = document.getElementById("tokenInput").value.trim();
+    //백엔드 서버 주소
+    const BACKEND_URL = 'http://localhost:7070';
+
+    let stompClient;
+
+    document.getElementById('connectBtn').addEventListener('click', () => {
+        const token = document.getElementById('tokenInput').value.trim();
         if (!token) {
-            alert("토큰을 입력하세요!");
+            alert('토큰을 입력해주세요.');
             return;
         }
 
-        const socket = new SockJS('http://localhost:7070/ws?token=' + token);
-        const stompClient = Stomp.over(socket);
+        const socket = new SockJS(`${BACKEND_URL}/ws?token=${encodeURIComponent(token)}`);
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
 
-        stompClient.connect({}, function(frame) {
-            console.log('STOMP 연결 성공!', frame);
-            alert('연결 성공!');
-        }, function(error) {
-            console.error('연결 실패:', error);
-            alert('연결 실패! 콘솔 로그 확인');
-        });
-    }
+        stompClient.connect(
+            {},
+            frame => {
+                console.log('STOMP Connected:', frame);
+
+                stompClient.subscribe('/user/queue/notifications', message => {
+                    let body;
+                    try {
+                        body = JSON.parse(message.body);
+                    } catch {
+                        body = message.body;
+                    }
+                    const li = document.createElement('li');
+                    li.textContent = typeof body === 'object'
+                        ? JSON.stringify(body)
+                        : body;
+                    document.getElementById('notifications').appendChild(li);
+                });
+            },
+            error => {
+                console.error('STOMP error:', error);
+                alert('연결 실패');
+            }
+        );
+    });
 </script>
 </body>
 </html>

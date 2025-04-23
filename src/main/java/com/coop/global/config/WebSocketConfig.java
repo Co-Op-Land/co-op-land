@@ -34,11 +34,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOrigins(
-                        "http://localhost:3000",
-                        "http://localhost:63342",
-                        "http://localhost:7070"
-                )
+                .setAllowedOriginPatterns("*")  //TODO 개발용
                 .addInterceptors(new WebSocketHandshakeInterceptor(jwtUtil))
                 .withSockJS();
     }
@@ -49,15 +45,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
+    public boolean configureMessageConverters(List<MessageConverter> converters) {
         DefaultContentTypeResolver resolver = new DefaultContentTypeResolver();
         resolver.setDefaultMimeType(MimeTypeUtils.APPLICATION_JSON);
-
-        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-        converter.setObjectMapper(new ObjectMapper());
-        converter.setContentTypeResolver(resolver);
-
-        messageConverters.add(converter);
+        MappingJackson2MessageConverter jsonConverter = new MappingJackson2MessageConverter();
+        jsonConverter.setObjectMapper(new ObjectMapper());
+        jsonConverter.setContentTypeResolver(resolver);
+        converters.add(jsonConverter);
         return false;
     }
 }
