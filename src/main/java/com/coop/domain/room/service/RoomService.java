@@ -41,7 +41,12 @@ public class RoomService {
         Game game = gameComponent.findGameById(request.gameId());
 
         Room room = roomRepository.save(request.toEntity(member, game));
-        roomPlayerRepository.addPlayer(room.getId(), memberId, room.getMaxPlayerCount());
+        roomPlayerRepository.generateRoom(
+                room.getId(),
+                memberId,
+                game.getId(),
+                room.getMaxPlayerCount()
+        );
 
         return room.getId();
     }
@@ -52,8 +57,8 @@ public class RoomService {
         Map<Long, Integer> currentPlayerCountInRoom = rooms.stream()
                 .collect(Collectors.toMap(
                         Room::getId,
-                        room -> roomPlayerRepository.getPlayerInRoom(room.getId()).size()
-                ));
+                        room -> roomPlayerRepository.getPlayerInRoom(room.getId()).size())
+                );
 
         return rooms.stream()
                 .map(room -> RoomReadResponse.of(room, currentPlayerCountInRoom.get(room.getId())))
@@ -98,7 +103,11 @@ public class RoomService {
     public void joinRoom(Long memberId, Long roomId) {
         Room room = findRoomById(roomId);
 
-        roomPlayerRepository.addPlayer(room.getId(), memberId, room.getMaxPlayerCount());
+        roomPlayerRepository.joinRoom(
+                room.getId(),
+                memberId,
+                room.getGame().getId()
+        );
     }
 
     @Transactional

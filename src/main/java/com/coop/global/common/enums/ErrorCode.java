@@ -41,9 +41,10 @@ public enum ErrorCode {
 
     // Room
     ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "R404", "존재하지 않는 방입니다."),
-    MEMBER_NOT_IN_ROOM(HttpStatus.NOT_FOUND, "R400", "유저가 해당 방에 없습니다."),
+    MEMBER_NOT_IN_ROOM(HttpStatus.NOT_FOUND, "R404", "유저가 해당 방에 없습니다."),
     MEMBER_ALREADY_IN_ROOM(HttpStatus.CONFLICT, "R409", "이미 방에 접속중입니다."),
     ROOM_IS_FULL(HttpStatus.BAD_REQUEST, "R400", "방이 가득 찼습니다."),
+    REDIS_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "R404", "존재하지 않는 방입니다."),
 
     //History
     HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "H404", "존재하지 않는 방입니다."),
