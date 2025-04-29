@@ -5,8 +5,10 @@ import com.coop.domain.comment.service.CommentService;
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.post.entity.Post;
+import com.coop.domain.post.entity.PostDocument;
 import com.coop.domain.post.enums.PostCategory;
 import com.coop.domain.post.repository.PostRepository;
+import com.coop.domain.post.repository.PostSearchRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.AccessDeniedException;
 import com.coop.global.exception.error.NotFoundException;
@@ -33,15 +35,23 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final PostSearchRepository postSearchRepository;
     private final MemberComponent memberComponent;
     private final CommentService commentService;
 
     @Transactional
     public Long generatePost(UserDetails userDetails, PostRequest request) {
         Member member = memberComponent.findMemberReference(Long.valueOf(userDetails.getUsername()));
-        postRepository.save(request.of(member));
+        Post post = postRepository.save(request.of(member));
 
-        return member.getId();
+        PostDocument postDocument = PostDocument.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .build();
+        postSearchRepository.save(postDocument);
+
+        return post.getId();
     }
 
     public PostPageResponse getPosts(Pageable pageable, String category) {

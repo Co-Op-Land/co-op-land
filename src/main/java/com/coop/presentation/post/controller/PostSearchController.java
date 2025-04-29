@@ -1,5 +1,6 @@
 package com.coop.presentation.post.controller;
 
+import com.coop.domain.post.entity.PostDocument;
 import com.coop.domain.post.enums.PostCategory;
 import com.coop.domain.post.service.PostSearchService;
 import com.coop.global.common.ApiResponse;
@@ -47,5 +48,12 @@ public class PostSearchController {
             @RequestParam PostCategory category
     ) {
         return ApiResponse.success(postSearchService.searchPostsByCategory(keyword,category));
+    }
+
+    @GetMapping("/es")
+    public ResponseEntity<ApiResponse<List<PostDocument>>> readPostByElasticSearch(
+            @RequestParam String keyword
+    ) {
+        return ApiResponse.success(postSearchService.searchPostByElasticSearch(keyword));
     }
 }
