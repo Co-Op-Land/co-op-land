@@ -6,11 +6,12 @@ import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.playHistory.service.HistoryService;
 import com.coop.domain.room.entity.Room;
+import com.coop.domain.room.enums.Visibility;
 import com.coop.domain.room.repository.RoomRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.ForbiddenException;
 import com.coop.global.exception.error.NotFoundException;
-import com.coop.global.repository.RoomPlayerRepository;
+import com.coop.global.repository.RoomPlayerService;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateStatusRequest;
@@ -33,19 +34,23 @@ public class RoomService {
     private final GameComponent gameComponent;
     private final HistoryService historyService;
     private final RoomRepository roomRepository;
-    private final RoomPlayerRepository roomPlayerRepository;
+    private final RoomPlayerService roomPlayerService;
 
     @Transactional
     public Long generateRoom(Long memberId, RoomCreateRequest request) {
+        roomPlayerService.checkPlayerInAnyRoom(memberId);
+
         Member member = memberComponent.findById(memberId);
         Game game = gameComponent.findGameById(request.gameId());
 
         Room room = roomRepository.save(request.toEntity(member, game));
-        roomPlayerRepository.generateRoom(
+
+        roomPlayerService.generateRoom(
                 room.getId(),
                 memberId,
                 game.getId(),
-                room.getMaxPlayerCount()
+                room.getMaxPlayerCount(),
+                room.getVisibility()
         );
 
         return room.getId();
@@ -57,7 +62,7 @@ public class RoomService {
         Map<Long, Integer> currentPlayerCountInRoom = rooms.stream()
                 .collect(Collectors.toMap(
                         Room::getId,
-                        room -> roomPlayerRepository.getPlayerInRoom(room.getId()).size())
+                        room -> roomPlayerService.getCurrentPlayerCount(room.getId()))
                 );
 
         return rooms.stream()
@@ -68,7 +73,7 @@ public class RoomService {
     @Transactional(readOnly = true)
     public RoomReadDetailResponse findRoom(Long roomId) {
         Room room = findRoomById(roomId);
-        Set<Long> playerInRoom = roomPlayerRepository.getPlayerInRoom(room.getId());
+        Set<Long> playerInRoom = roomPlayerService.getPlayersInRoom(room.getId());
         List<Member> players = memberComponent.getMembers(playerInRoom);
 
         return RoomReadDetailResponse.of(room, players);
@@ -80,7 +85,11 @@ public class RoomService {
 
         checkUserAuthority(room.getHost().getId(), memberId);
 
-        room.update(request.title(), request.maxPlayerCount(), request.difficulty(), request.visibility());
+        Integer maxPlayerCount = request.maxPlayerCount();
+        Visibility visibility = request.visibility();
+
+        roomPlayerService.updateRoomInfo(room.getId(), maxPlayerCount, visibility);
+        room.update(request.title(), maxPlayerCount, request.difficulty(), visibility);
     }
 
     @Transactional
@@ -89,7 +98,7 @@ public class RoomService {
 
         checkUserAuthority(room.getHost().getId(), memberId);
 
-        Set<Long> playerInRoom = roomPlayerRepository.getPlayerInRoom(room.getId());
+        Set<Long> playerInRoom = roomPlayerService.getPlayersInRoom(room.getId());
         List<Member> players = memberComponent.getMembers(playerInRoom);
 
         switch (request.status()) {
@@ -101,22 +110,20 @@ public class RoomService {
 
     @Transactional
     public void joinRoom(Long memberId, Long roomId) {
-        Room room = findRoomById(roomId);
+        roomPlayerService.checkPlayerInAnyRoom(memberId);
 
-        roomPlayerRepository.joinRoom(
-                room.getId(),
-                memberId,
-                room.getGame().getId()
+        roomPlayerService.joinRoom(
+                roomId,
+                memberId
         );
     }
 
     @Transactional
     public void leaveRoom(Long memberId, Long roomId) {
-        Room room = findRoomById(roomId);
+        roomPlayerService.removePlayer(roomId, memberId);
 
-        roomPlayerRepository.removePlayer(room.getId(), memberId);
-
-        if (!roomPlayerRepository.isRoomExists(roomId)) {
+        if (!roomPlayerService.isRoomExists(roomId)) {
+            Room room = findRoomById(roomId);
             room.close();
         }
     }

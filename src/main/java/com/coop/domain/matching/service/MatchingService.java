@@ -1,7 +1,7 @@
 package com.coop.domain.matching.service;
 
 import com.coop.global.exception.error.BaseException;
-import com.coop.global.repository.RoomPlayerRepository;
+import com.coop.global.repository.RoomPlayerService;
 import com.coop.presentation.matching.dto.request.MatchingRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,17 +14,18 @@ import java.util.Set;
 @Slf4j
 public class MatchingService {
 
-    private final RoomPlayerRepository roomPlayerRepository;
+    private final RoomPlayerService roomPlayerRepository;
 
     public void joinMatching(Long memberId, MatchingRequest request) {
+        roomPlayerRepository.checkPlayerInAnyRoom(memberId);
+
         Set<Long> matchingRoomIds = roomPlayerRepository.getMatchingRooms(request.gameId());
 
         for (Long roomId : matchingRoomIds) {
             try {
                 roomPlayerRepository.joinRoom(
                         roomId,
-                        memberId,
-                        request.gameId()
+                        memberId
                 );
                 break;
             } catch (BaseException e) {
