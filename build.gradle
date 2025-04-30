@@ -70,6 +70,10 @@ dependencies {
 
 	//websocket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.23.5'
+	implementation 'org.redisson:redisson:3.23.5'
 }
 
 // Q클래스 생성 경로 설정

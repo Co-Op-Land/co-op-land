@@ -48,6 +48,9 @@ public enum ErrorCode {
     REDIS_ROOM_NO_PLAYERS(HttpStatus.NOT_FOUND, "R404", "방에 인원이 존재하지 않습니다."),
     EXCEEDS_CURRENT_PLAYER_COUNT(HttpStatus.BAD_REQUEST, "R400", "현재 인원이 변경하려는 최대 인원보다 많습니다"),
 
+    // Redisson Lock
+    LOCK_ACQUISITION_FAILED(HttpStatus.TOO_MANY_REQUESTS, "L429", "락 획득에 실패했습니다. 잠시 후 다시 시도해주세요."),
+
     //History
     HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "H404", "존재하지 않는 방입니다."),
 

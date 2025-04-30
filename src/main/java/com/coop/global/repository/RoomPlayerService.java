@@ -2,6 +2,7 @@ package com.coop.global.repository;
 
 import com.coop.domain.room.entity.RoomInfo;
 import com.coop.domain.room.enums.Visibility;
+import com.coop.global.aop.annotation.DistributedLock;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.EntityAlreadyExistException;
 import com.coop.global.exception.error.InvalidRequestException;
@@ -9,6 +10,7 @@ import com.coop.global.exception.error.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ public class RoomPlayerService {
         roomRedisRepository.save(roomInfo);
     }
 
+    @DistributedLock(key = "#roomId", prefix = "lock:room:")
     public void joinRoom(Long roomId, Long memberId) {
         RoomInfo roomInfo = findRoomInfoById(roomId);
         Integer maxPlayerCount = roomInfo.getMaxPlayerCount();
@@ -44,6 +47,7 @@ public class RoomPlayerService {
         addPlayerToRoom(roomId, memberId, roomInfo.getGameId(), maxPlayerCount, roomInfo.getVisibility());
     }
 
+    @DistributedLock(key = "#roomId", prefix = "lock:room:")
     public void removePlayer(Long roomId, Long memberId) {
         checkPlayerInThisRoom(roomId, memberId);
 
@@ -81,6 +85,7 @@ public class RoomPlayerService {
 
     public Set<Long> getMatchingRooms(Long gameId) {
         return Optional.ofNullable(roomPlayerRepository.getMatchingRoomsByGameId(gameId))
+                .orElse(Collections.emptySet())
                 .stream()
                 .map(roomId -> Long.valueOf(roomId.toString()))
                 .collect(Collectors.toSet());

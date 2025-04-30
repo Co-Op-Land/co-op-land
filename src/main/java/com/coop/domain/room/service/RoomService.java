@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoomService {
 
+    private final HistoryService historyService;
+    private final RoomPlayerService roomPlayerService;
     private final MemberComponent memberComponent;
     private final GameComponent gameComponent;
-    private final HistoryService historyService;
     private final RoomRepository roomRepository;
-    private final RoomPlayerService roomPlayerService;
 
     @Transactional
     public Long generateRoom(Long memberId, RoomCreateRequest request) {
@@ -108,7 +108,6 @@ public class RoomService {
         room.updateStatus(request.status());
     }
 
-    @Transactional
     public void joinRoom(Long memberId, Long roomId) {
         roomPlayerService.checkPlayerInAnyRoom(memberId);
 
