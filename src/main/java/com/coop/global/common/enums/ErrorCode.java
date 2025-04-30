@@ -28,7 +28,11 @@ public enum ErrorCode {
 
     // Post
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P404", "존재하지 않는 게시물입니다."),
-    INVALID_POST_CATEGORY(HttpStatus.BAD_REQUEST, "P400", "게시물 카테고리가 잘못되었습니다."),
+    INVALID_POST_CATEGORY(HttpStatus.BAD_REQUEST, "P400", "카테고리 값이 유효하지 않습니다."),
+    EMPTY_CATEGORY_VALUE(HttpStatus.BAD_REQUEST, "P400", "카테고리 값이 비어있습니다."),
+
+    // Search
+    ES_SEARCH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S500", "Elasticsearch 검색 중 오류 발생"),
 
     // Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "C404", "존재하지 않는 댓글입니다."),

@@ -62,14 +62,19 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	// elasticsearch
+	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1'
 }
 
-// Q클래스 생성 경로 설정
+	// Q클래스 생성 경로 설정
 def querydslDir = "$buildDir/generated/querydsl"
 
 // Q클래스 생성 설정
 tasks.withType(JavaCompile) {
-    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+	options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+
 }
 
 // Q클래스 소스 디렉토리 지정
