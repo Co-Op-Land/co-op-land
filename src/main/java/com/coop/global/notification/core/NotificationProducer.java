@@ -28,7 +28,6 @@ public class NotificationProducer {
     public Object notify(ProceedingJoinPoint joinPoint, TriggerNotification triggerNotification) throws Throwable {
         Object result = joinPoint.proceed();
         Object[] args = joinPoint.getArgs();
-
         NotificationStrategy strategy = strategies.stream()
                 .filter(s -> s.supports(triggerNotification.target()))
                 .findFirst()

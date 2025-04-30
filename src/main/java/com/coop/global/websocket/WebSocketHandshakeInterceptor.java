@@ -17,9 +17,6 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import java.util.Arrays;
 import java.util.Map;
 
-/**
- * 웹소켓 핸드쉐이킹 -> 연결
- */
 @Slf4j
 @RequiredArgsConstructor
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
