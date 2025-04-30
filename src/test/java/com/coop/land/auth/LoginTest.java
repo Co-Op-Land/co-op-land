@@ -24,20 +24,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class LoginTest {
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @Mock private PasswordEncoder passwordEncoder;
+    @Mock private MemberComponent memberComponent;
+    @Mock private JwtUtil jwtUtil;
+    @Mock private RefreshTokenService refreshTokenService;
 
-    @Mock
-    private MemberComponent memberComponent;
-
-    @Mock
-    private JwtUtil jwtUtil;
-
-    @Mock
-    private RefreshTokenService refreshTokenService;
-
-    @InjectMocks
-    private AuthService authService;
+    @InjectMocks private AuthService authService;
 
     @Test
     void testLogin_로그인_성공했을때() {
@@ -46,8 +38,9 @@ public class LoginTest {
         Member member = mock(Member.class);
         when(memberComponent.findByEmail(dto.email())).thenReturn(member);
         when(passwordEncoder.matches(dto.password(), member.getPassword())).thenReturn(true);
-        when(jwtUtil.createToken(anyLong(), any())).thenReturn("accessToken");
+        when(jwtUtil.createToken(anyLong(), any())).thenReturn("rawAccessToken");
         when(jwtUtil.createRefreshToken(anyLong())).thenReturn("refreshToken");
+        when(jwtUtil.removePrefix(anyString())).thenReturn("accessToken");
         doNothing().when(refreshTokenService).createRefreshToken(anyLong(), anyString());
 
         //when

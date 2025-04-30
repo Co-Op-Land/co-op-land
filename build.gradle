@@ -66,6 +66,14 @@ dependencies {
 	// elasticsearch
 	implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1'
+
+  //kafka
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	//websocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 	// Q클래스 생성 경로 설정
