@@ -6,6 +6,7 @@ import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.post.entity.Post;
 import com.coop.domain.post.enums.PostCategory;
+import com.coop.domain.post.event.PostCreatedEvent;
 import com.coop.domain.post.repository.PostRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.AccessDeniedException;
@@ -16,6 +17,7 @@ import com.coop.presentation.post.dto.response.PostPageResponse;
 import com.coop.presentation.post.dto.response.PostResponse;
 import com.coop.presentation.post.dto.response.PostsResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,13 +31,16 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberComponent memberComponent;
     private final CommentService commentService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Long generatePost(Long memberId, PostRequest request) {
-        Member member = memberComponent.findMemberReference(memberId);
-        postRepository.save(request.of(member));
+        Member member = memberComponent.findById(memberId);
+        Post post = postRepository.save(request.of(member));
 
-        return member.getId();
+        eventPublisher.publishEvent(new PostCreatedEvent(post, member));
+
+        return post.getId();
     }
 
     public PostPageResponse getPosts(Pageable pageable, String category) {
