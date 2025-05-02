@@ -1,5 +1,6 @@
 package com.coop.domain.post.entity;
 
+import com.coop.domain.member.entity.Member;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,6 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PostDocument {
+
+    private static final int PREVIEW_LENGTH = 50;
+
     @Id
     private Long id;
 
@@ -50,5 +54,22 @@ public class PostDocument {
         this.author = author;
         this.category = category;
         this.updatedAt = updatedAt;
+    }
+
+    public static PostDocument of(Post post, Member member) {
+        return PostDocument.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .contentPreview(generatePreview(post.getContent()))
+                .author(member.getNickname())
+                .category(post.getCategory().toString())
+                .updatedAt(post.getUpdatedAt())
+                .build();
+    }
+
+    private static String generatePreview(String content) {
+        return content.length() > PREVIEW_LENGTH
+                ? content.substring(0, PREVIEW_LENGTH) + "..."
+                : content;
     }
 }

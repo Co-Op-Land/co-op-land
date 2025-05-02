@@ -1,6 +1,6 @@
 package com.coop.domain.post.event;
 
-import com.coop.domain.post.service.PostEsService;
+import com.coop.global.util.ElasticsearchBatchProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -12,15 +12,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PostCreatedEventListener {
 
-    private final PostEsService postEsService;
+    private final ElasticsearchBatchProcessor elasticsearchBatchProcessor;
 
     @Async
     @EventListener
     public void handlePostCreateEvent(PostCreatedEvent event) {
         try {
-            postEsService.generatePostDocument(event.getPost(), event.getMember());
+            elasticsearchBatchProcessor.addToQueue(event);
         } catch (Exception e) {
-            log.error("엘라스틱서치 문서 생성 실패", e);
+            log.error("엘라스틱서치 문서 큐 추가 실패", e);
         }
     }
 }

@@ -3,10 +3,13 @@ package com.coop.domain.post.service;
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.post.entity.Post;
 import com.coop.domain.post.entity.PostDocument;
+import com.coop.domain.post.event.PostCreatedEvent;
 import com.coop.domain.post.repository.PostEsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,22 +20,16 @@ public class PostEsService {
 
     @Transactional
     public void generatePostDocument(Post post, Member member) {
-        PostDocument document = PostDocument.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .contentPreview(generatePreview(post.getContent()))
-                .author(member.getNickname())
-                .category(post.getCategory().toString())
-                .updatedAt(post.getUpdatedAt())
-                .build();
-
+        PostDocument document = PostDocument.of(post, member);
         postEsRepository.save(document);
     }
 
-    private String generatePreview(String content) {
-        int previewLength = 50;
-        return content.length() > previewLength
-                ? content.substring(0, previewLength) + "..."
-                : content;
+    @Transactional
+    public void saveAllFromEvents(List<PostCreatedEvent> events) {
+        List<PostDocument> documents = events.stream()
+                .map(event -> PostDocument.of(event.getPost(), event.getMember()))
+                .toList();
+
+        postEsRepository.saveAll(documents);
     }
 }
