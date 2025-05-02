@@ -1,15 +1,17 @@
 package com.coop.domain.room.service;
 
 import com.coop.domain.game.entity.Game;
-import com.coop.domain.game.repository.GameRepository;
+import com.coop.domain.game.service.GameComponent;
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
+import com.coop.domain.playHistory.service.HistoryService;
 import com.coop.domain.room.entity.Room;
+import com.coop.domain.room.enums.Visibility;
 import com.coop.domain.room.repository.RoomRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.ForbiddenException;
 import com.coop.global.exception.error.NotFoundException;
-import com.coop.global.repository.RoomPlayerRepository;
+import com.coop.global.repository.RoomPlayerService;
 import com.coop.presentation.room.dto.request.RoomCreateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateRequest;
 import com.coop.presentation.room.dto.request.RoomUpdateStatusRequest;
@@ -28,18 +30,28 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoomService {
 
-    private final RoomRepository roomRepository;
-    private final RoomPlayerRepository roomPlayerRepository;
+    private final HistoryService historyService;
+    private final RoomPlayerService roomPlayerService;
     private final MemberComponent memberComponent;
-    private final GameRepository gameRepository;
+    private final GameComponent gameComponent;
+    private final RoomRepository roomRepository;
 
     @Transactional
     public Long generateRoom(Long memberId, RoomCreateRequest request) {
-        Member member = findMemberById(memberId);
-        Game game = findGameById(request.gameId());
+        roomPlayerService.checkPlayerInAnyRoom(memberId);
+
+        Member member = memberComponent.findById(memberId);
+        Game game = gameComponent.findGameById(request.gameId());
 
         Room room = roomRepository.save(request.toEntity(member, game));
-        roomPlayerRepository.addPlayer(room.getId(), memberId, room.getMaxPlayerCount());
+
+        roomPlayerService.generateRoom(
+                room.getId(),
+                memberId,
+                game.getId(),
+                room.getMaxPlayerCount(),
+                room.getVisibility()
+        );
 
         return room.getId();
     }
@@ -50,8 +62,8 @@ public class RoomService {
         Map<Long, Integer> currentPlayerCountInRoom = rooms.stream()
                 .collect(Collectors.toMap(
                         Room::getId,
-                        room -> roomPlayerRepository.getPlayerInRoom(room.getId()).size()
-                ));
+                        room -> roomPlayerService.getCurrentPlayerCount(room.getId()))
+                );
 
         return rooms.stream()
                 .map(room -> RoomReadResponse.of(room, currentPlayerCountInRoom.get(room.getId())))
@@ -61,13 +73,11 @@ public class RoomService {
     @Transactional(readOnly = true)
     public RoomReadDetailResponse findRoom(Long roomId) {
         Room room = findRoomById(roomId);
-        Set<Long> playerInRoom = roomPlayerRepository.getPlayerInRoom(room.getId());
+        Set<Long> playerInRoom = roomPlayerService.getPlayersInRoom(room.getId());
         List<Member> players = memberComponent.getMembers(playerInRoom);
 
         return RoomReadDetailResponse.of(room, players);
     }
-
-
 
     @Transactional
     public void modifyRoom(Long memberId, Long roomId, RoomUpdateRequest request) {
@@ -75,7 +85,11 @@ public class RoomService {
 
         checkUserAuthority(room.getHost().getId(), memberId);
 
-        room.update(request.title(), request.maxPlayerCount(), request.difficulty(), request.visibility());
+        Integer maxPlayerCount = request.maxPlayerCount();
+        Visibility visibility = request.visibility();
+
+        roomPlayerService.updateRoomInfo(room.getId(), maxPlayerCount, visibility);
+        room.update(request.title(), maxPlayerCount, request.difficulty(), visibility);
     }
 
     @Transactional
@@ -84,23 +98,31 @@ public class RoomService {
 
         checkUserAuthority(room.getHost().getId(), memberId);
 
+        Set<Long> playerInRoom = roomPlayerService.getPlayersInRoom(room.getId());
+        List<Member> players = memberComponent.getMembers(playerInRoom);
+
+        switch (request.status()) {
+            case PLAYING -> historyService.generateHistory(room, players);
+            case COMPLETED -> historyService.modifyHistoryToCompleted(room.getId());
+        }
         room.updateStatus(request.status());
     }
 
-    @Transactional
     public void joinRoom(Long memberId, Long roomId) {
-        Room room = findRoomById(roomId);
+        roomPlayerService.checkPlayerInAnyRoom(memberId);
 
-        roomPlayerRepository.addPlayer(room.getId(), memberId, room.getMaxPlayerCount());
+        roomPlayerService.joinRoom(
+                roomId,
+                memberId
+        );
     }
 
     @Transactional
     public void leaveRoom(Long memberId, Long roomId) {
-        Room room = findRoomById(roomId);
+        roomPlayerService.removePlayer(roomId, memberId);
 
-        roomPlayerRepository.removePlayer(room.getId(), memberId);
-
-        if (!roomPlayerRepository.isRoomExists(roomId)) {
+        if (!roomPlayerService.isRoomExists(roomId)) {
+            Room room = findRoomById(roomId);
             room.close();
         }
     }
@@ -112,14 +134,6 @@ public class RoomService {
     }
 
     // 헬퍼
-    private Member findMemberById(Long memberId) {
-        return memberComponent.findById(memberId);
-    }
-
-    private Game findGameById(Long gameId) {
-        return gameRepository.findById(gameId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.GAME_NOT_FOUND));
-    }
 
     private void checkUserAuthority(Long userId, Long loginUserId) {
         if (!userId.equals(loginUserId)) {
