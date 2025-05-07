@@ -22,21 +22,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class RefreshAccessTokenTest {
 
-    @Mock
-    private MemberComponent memberComponent;
+    @Mock private MemberComponent memberComponent;
+    @Mock private JwtUtil jwtUtil;
+    @Mock private RefreshTokenService refreshTokenService;
 
-    @Mock
-    private JwtUtil jwtUtil;
-
-    @Mock
-    private RefreshTokenService refreshTokenService;
-
-    @InjectMocks
-    private AuthService authService;
+    @InjectMocks private AuthService authService;
 
     @Test
     void testRefreshAccessToken_액세스토큰_재발급_성공했을때() {
-        //given
         String refreshToken = "validRefreshToken";
         Claims claims = mock(Claims.class);
         Member member = mock(Member.class);
@@ -48,43 +41,45 @@ public class RefreshAccessTokenTest {
         when(jwtUtil.substringToken("validRefreshToken")).thenReturn("validRefreshToken");
         when(jwtUtil.createRefreshToken(1L)).thenReturn("newRefreshToken");
         when(memberComponent.findById(1L)).thenReturn(member);
-        when(jwtUtil.createToken(1L, member.getRole())).thenReturn("newAccessToken");
+        when(jwtUtil.createToken(1L, member.getRole())).thenReturn("rawNewAccessToken");
+        when(jwtUtil.removePrefix("rawNewAccessToken")).thenReturn("newAccessToken");
 
-        //when
         RefreshAccessTokenResponse response = authService.refreshAccessToken(refreshToken);
 
-        //then
         assertNotNull(response);
         assertEquals("newAccessToken", response.accessToken());
     }
 
     @Test
     void testRefreshAccessToken_존재하지_않는_토큰() {
-        //given
-        String invalidRefreshToken = "invalidToken";
-        when(jwtUtil.extractClaims(invalidRefreshToken)).thenThrow(new UnAuthorizedException(ErrorCode.TOKEN_UNAUTHORIZED));
+        String rawToken = "Bearer invalid";
+        String strippedToken = "invalid";
 
-        //when & then
-        UnAuthorizedException exception = assertThrows(UnAuthorizedException.class, () -> authService.refreshAccessToken(invalidRefreshToken));
+        when(jwtUtil.substringToken(rawToken)).thenReturn(strippedToken);
+        when(jwtUtil.extractClaims(strippedToken))
+                .thenThrow(new UnAuthorizedException(ErrorCode.TOKEN_UNAUTHORIZED));
+
+        UnAuthorizedException exception = assertThrows(
+                UnAuthorizedException.class,
+                () -> authService.refreshAccessToken(rawToken)
+        );
         assertEquals(ErrorCode.TOKEN_UNAUTHORIZED.getMessage(), exception.getMessage());
     }
 
     @Test
     void testRefreshAccessToken_리프레시토큰_불일치() {
-        //given
-        String refreshToken = "validRefreshToken";
+        String rawToken = "Bearer validRefreshToken";
+        String strippedToken = "validRefreshToken";
         String storedToken = "differentStoredToken";
         Claims claims = mock(Claims.class);
 
-        when(jwtUtil.extractClaims(refreshToken)).thenReturn(claims);
+        when(jwtUtil.substringToken(rawToken)).thenReturn(strippedToken);
+        when(jwtUtil.extractClaims(strippedToken)).thenReturn(claims);
         when(claims.getSubject()).thenReturn("1");
         when(refreshTokenService.getRefreshToken(1L)).thenReturn(storedToken);
 
-        //when & then
         UnAuthorizedException exception = assertThrows(UnAuthorizedException.class,
-                () -> authService.refreshAccessToken(refreshToken));
-
+                () -> authService.refreshAccessToken(rawToken));
         assertEquals(ErrorCode.TOKEN_UNAUTHORIZED.getMessage(), exception.getMessage());
     }
-
 }

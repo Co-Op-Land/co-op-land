@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    restart: always
+    ports:
+      - "6060:6060"
+
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app2
+    restart: always
+    ports:
+      - "6061:6060"
+
+#application-docker.yml 파일 추가 필요 문의 이채영

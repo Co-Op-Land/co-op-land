@@ -4,10 +4,11 @@ import com.coop.domain.rating.entity.Rating;
 import lombok.Builder;
 
 @Builder
-public record RatingResponse (String fromMemberNickname, int score, String reason) {
+public record RatingResponse (Long id, String fromMemberNickname, int score, String reason) {
 
     public static RatingResponse from(Rating rating) {
         return RatingResponse.builder()
+                .id(rating.getId())
                 .fromMemberNickname(rating.getFromMember().getNickname())
                 .score(rating.getScore())
                 .reason(rating.getReason())

@@ -1,6 +1,5 @@
 package com.coop.land.util;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -19,7 +18,7 @@ public class TestUtils {
     public static <T> T createEntity(Class<T> clazz, Map<String, Object> fieldValues) {
         try {
             Constructor<T> constructor = clazz.getDeclaredConstructor();
-            constructor.setAccessible(true);  // 🔥 protected/private 생성자 접근 허용
+            constructor.setAccessible(true);  //protected/private 생성자 접근 허용
             T instance = constructor.newInstance();
 
             for (Map.Entry<String, Object> entry : fieldValues.entrySet()) {

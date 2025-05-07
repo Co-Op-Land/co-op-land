@@ -1,67 +1,77 @@
 package com.coop.global.repository;
 
-import com.coop.global.common.enums.ErrorCode;
-import com.coop.global.exception.error.EntityAlreadyExistException;
-import com.coop.global.exception.error.InvalidRequestException;
-import com.coop.global.exception.error.NotFoundException;
-import org.springframework.stereotype.Repository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-@Repository
+@Service
+@RequiredArgsConstructor
 public class RoomPlayerRepository {
 
-    private final Map<Long, Set<Long>> roomPlayers = new ConcurrentHashMap<>();
-    private final Map<Long, Long> playerToRoom = new ConcurrentHashMap<>();
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final String MATCHING_KEY = "match:rooms:";
+    private final String ROOM_KEY = "room:players:";
+    private final String PLAYER_KEY = "player:in-room:";
 
-    public void addPlayer(Long roomId, Long memberId, Integer maxPlayerCount) {
-        if (isPlayerInAnyRoom(memberId)) {
-            throw new EntityAlreadyExistException(ErrorCode.MEMBER_ALREADY_IN_ROOM);
-        }
-
-        Set<Long> playerInRoom = roomPlayers.computeIfAbsent(roomId, k -> ConcurrentHashMap.newKeySet());
-
-        if (maxPlayerCount <= playerInRoom.size()) {
-            throw new InvalidRequestException(ErrorCode.ROOM_IS_FULL);
-        }
-
-        playerInRoom.add(memberId);
-        playerToRoom.put(memberId, roomId);
+    public boolean playerExists(Long playerId) {
+        return hasKey(PLAYER_KEY + playerId);
     }
 
-    public void removePlayer(Long roomId, Long memberId) {
-        if (!isPlayerInThisRoom(memberId, roomId)) {
-            throw new NotFoundException(ErrorCode.MEMBER_NOT_IN_ROOM);
-        }
-
-        roomPlayers.computeIfPresent(roomId, (k, members) -> {
-            members.remove(memberId);
-            return members.isEmpty() ? null : members;
-        });
-        playerToRoom.remove(memberId);
+    public boolean roomExists(Long roomId) {
+        return hasKey(ROOM_KEY + roomId);
     }
 
-    public Set<Long> getPlayerInRoom(Long roomId) {
-        if (!isRoomExists(roomId)) {
-            throw new NotFoundException(ErrorCode.ROOM_NOT_FOUND);
-        }
-
-        return roomPlayers.get(roomId);
+    public boolean isPlayerInRoom(Long roomId, Long playerId) {
+        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(ROOM_KEY + roomId, String.valueOf(playerId)));
     }
 
-    public boolean isRoomExists(Long roomId) {
-        return roomPlayers.containsKey(roomId);
+    public void savePlayerToRoom(Long roomId, Long playerId) {
+        redisTemplate.opsForSet().add(ROOM_KEY + roomId, String.valueOf(playerId));
     }
 
-    private boolean isPlayerInAnyRoom(Long memberId) {
-        return playerToRoom.containsKey(memberId);
+    public void savePlayer(Long playerId) {
+        redisTemplate.opsForValue().set(PLAYER_KEY + playerId, true);
     }
 
-    private boolean isPlayerInThisRoom(Long memberId, Long roomId) {
-        return roomPlayers.getOrDefault(roomId, Collections.emptySet())
-                .contains(memberId);
+    public void saveMatching(Long gameId, String roomId, double count) {
+        redisTemplate.opsForZSet().add(MATCHING_KEY + gameId, roomId, count);
+    }
+
+    public Set<Object> getPlayersByRoomId(Long roomId) {
+        return redisTemplate.opsForSet().members(ROOM_KEY + roomId);
+    }
+
+    public Long getCurrentPlayerCountByRoomId(Long roomId) {
+        return redisTemplate.opsForSet().size(ROOM_KEY + roomId);
+    }
+
+    public Set<Object> getMatchingRoomsByGameId(Long gameId) {
+        return redisTemplate.opsForZSet().rangeByScore(MATCHING_KEY + gameId, 0, -1);
+    }
+
+    public void removePlayerInRoom(Long roomId, Long memberId) {
+        redisTemplate.opsForSet().remove(ROOM_KEY + roomId, String.valueOf(memberId));
+    }
+
+    public void removeMatching(Long gameId, String roomId) {
+        redisTemplate.opsForZSet().remove(MATCHING_KEY + gameId, String.valueOf(roomId));
+    }
+
+    public void deleteRoom(Long roomId) {
+        delete(ROOM_KEY + roomId);
+    }
+
+    public void deletePlayer(Long memberId) {
+        delete(PLAYER_KEY + memberId);
+    }
+
+    private boolean hasKey(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    private void delete(String key) {
+        redisTemplate.delete(key);
     }
 }

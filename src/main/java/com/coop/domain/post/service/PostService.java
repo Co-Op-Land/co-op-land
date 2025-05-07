@@ -5,10 +5,8 @@ import com.coop.domain.comment.service.CommentService;
 import com.coop.domain.member.entity.Member;
 import com.coop.domain.member.service.MemberComponent;
 import com.coop.domain.post.entity.Post;
-import com.coop.domain.post.entity.PostDocument;
 import com.coop.domain.post.enums.PostCategory;
 import com.coop.domain.post.repository.PostRepository;
-import com.coop.domain.post.repository.PostSearchRepository;
 import com.coop.global.common.enums.ErrorCode;
 import com.coop.global.exception.error.AccessDeniedException;
 import com.coop.global.exception.error.NotFoundException;
@@ -21,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,13 +30,16 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberComponent memberComponent;
     private final CommentService commentService;
-    private ApplicationEventPublisher eventPublisher;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public Long generatePost(UserDetails userDetails, PostRequest request) {
-        Member member = memberComponent.findMemberReference(Long.valueOf(userDetails.getUsername()));
+    public Long generatePost(Long memberId, PostRequest request) {
+        Member member = memberComponent.findById(memberId);
         Post post = postRepository.save(request.of(member));
 
+        eventPublisher.publishEvent(new PostCreatedEvent(post, member));
+
+        return post.getId();
         PostDocument postDocument = PostDocument.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -67,17 +67,17 @@ public class PostService {
     }
 
     @Transactional
-    public void modifyPost(UserDetails userDetails, Long postId, PostRequest request) {
+    public void modifyPost(Long memberId, Long postId, PostRequest request) {
         Post post = getPostById(postId);
-        validateAccess(post, userDetails);
+        validateAccess(post, memberId);
 
         post.modify(request.title(), request.content(), PostCategory.of(request.category()));
     }
 
     @Transactional
-    public void removePost(UserDetails userDetails, Long postId) {
+    public void removePost(Long memberId, Long postId) {
         Post post = getPostById(postId);
-        validateAccess(post, userDetails);
+        validateAccess(post, memberId);
 
         postRepository.delete(post);
     }
@@ -87,8 +87,8 @@ public class PostService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.POST_NOT_FOUND));
     }
 
-    private void validateAccess(Post post, UserDetails userDetails) {
-        if (!post.getMember().getId().equals(Long.valueOf(userDetails.getUsername()))) {
+    private void validateAccess(Post post, Long memberId) {
+        if (!post.getMember().getId().equals(memberId)) {
             throw new AccessDeniedException();
         }
     }
