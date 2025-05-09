@@ -129,6 +129,6 @@ public class PostSearchService {
     }
 
     public List<PostDocument> searchPostByElasticSearch(String keyword) {
-        return postSearchRepository.findByTitleContainingOrContentContaining(keyword, keyword);
+        return postSearchRepository.findByTitleContainingOrContentPreviewContaining(keyword, keyword);
     }
 }

@@ -1,7 +1,6 @@
 spring:
   profiles:
-    active: base
-
+    active: dev, rabbit
 #spring:
 #  profiles:
-#    active: dev
+#    active: dev, async

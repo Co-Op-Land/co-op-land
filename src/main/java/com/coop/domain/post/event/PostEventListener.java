@@ -1,13 +1,15 @@
-package com.coop.global.common.event;
+package com.coop.domain.post.event;
 
 import com.coop.domain.post.entity.PostDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
+@Profile("rabbit")
 @RequiredArgsConstructor
 public class PostEventListener {
 

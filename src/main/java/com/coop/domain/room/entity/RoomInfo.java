@@ -1,7 +1,7 @@
 package com.coop.domain.room.entity;
 
 import com.coop.domain.room.enums.Visibility;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisHash;

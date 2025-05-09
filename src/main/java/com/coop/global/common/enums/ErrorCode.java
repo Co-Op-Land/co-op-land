@@ -35,6 +35,7 @@ public enum ErrorCode {
 
     // Search
     ES_SEARCH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S500", "Elasticsearch 검색 중 오류 발생"),
+    ES_EVENT_ERROR(HttpStatus.CONFLICT,"E409", "ElasticSearch Event 처리 실패"),
 
     // Comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "C404", "존재하지 않는 댓글입니다."),
