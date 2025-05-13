@@ -37,7 +37,9 @@ public class PostController {
             @RequestParam(required = false) String category
     ) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-        return ApiResponse.success(postService.getPosts(pageable, category));
+        PostPageResponse responseDto = postService.getPosts(pageable, category);
+
+        return ApiResponse.success(responseDto);
     }
 
     @GetMapping("/{postId}")
@@ -47,8 +49,11 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").ascending());
-        return ApiResponse.success(postService.getPost(postId, pageable));
+        PostResponse responseDto = postService.getPost(postId, pageable);
+
+        return ApiResponse.success(responseDto);
     }
+
 
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> updatePost(

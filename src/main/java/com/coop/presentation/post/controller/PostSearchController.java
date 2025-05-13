@@ -30,15 +30,14 @@ public class PostSearchController {
     public ResponseEntity<ApiResponse<PostDocPageResponse>> readPostsBySearching(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int size,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String content,
+            @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String author,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String updatedAt
     ) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("updatedAt").descending());
         PostDocPageResponse responseDto =
-                postSearchService.getPostDocsBySearching(pageable, title, content, author, category, updatedAt);
+                postSearchService.getPostDocsBySearching(pageable, keyword, author, category, updatedAt);
 
         return ApiResponse.success(responseDto);
     }

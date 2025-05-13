@@ -33,28 +33,28 @@ public class PostSearchService {
     private final ElasticsearchClient elasticsearchClient;
 
     public PostDocPageResponse getPostDocsBySearching(
-            Pageable pageable, String title, String content, String author, String category, String updatedAt
+            Pageable pageable, String keyword, String author, String category, String updatedAt
     ) {
         Page<PostDocument> postDocuments = searchByFields
-                (pageable, title, content, author, category, updatedAt != null ? LocalDateTime.parse(updatedAt) : null);
+                (pageable, keyword, author, category, updatedAt != null ? LocalDateTime.parse(updatedAt) : null);
         Page<PostDocsResponse> postPage = postDocuments.map(PostDocsResponse::of);
 
         return PostDocPageResponse.from(postPage);
     }
 
     private Page<PostDocument> searchByFields(
-            Pageable pageable, String title, String content, String author, String category, LocalDateTime updatedAt
+            Pageable pageable, String keyword, String author, String category, LocalDateTime updatedAt
     ) {
         BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
 
-        if (StringUtils.hasText(title)) {
+        if (StringUtils.hasText(keyword)) {
             boolQueryBuilder.must(
-                    q -> q.match(m -> m.field("title").query(title)));
+                    q -> q.match(m -> m.field("title").query(keyword)));
         }
 
-        if (StringUtils.hasText(content)) {
+        if (StringUtils.hasText(keyword)) {
             boolQueryBuilder.must(
-                    q -> q.match(m -> m.field("contentPreview").query(content)));
+                    q -> q.match(m -> m.field("contentPreview").query(keyword)));
         }
 
         if (StringUtils.hasText(author)) {
